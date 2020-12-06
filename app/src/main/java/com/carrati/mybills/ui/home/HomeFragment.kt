@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.carrati.mybills.ui.main.R
+import com.carrati.mybills.R
 
 class HomeFragment : Fragment() {
 

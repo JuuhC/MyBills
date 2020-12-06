@@ -4,11 +4,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="?attr/actionBarSize">
+        android:background="#E8E8E8">
+
+        <fragment
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/mobile_navigation" />
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"
@@ -36,87 +43,109 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_plus_white_24dp"
-            android:backgroundTint="@android:color/holo_blue_dark"
+            android:contentDescription="@string/title_transacoes"
+            app:backgroundTint="@android:color/holo_blue_dark"
             app:layout_anchor="@id/bottom_app_bar"
-            android:contentDescription="@string/title_transacoes" />
+            app:tint="@null" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_fab_menu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            android:visibility="invisible"
             app:layout_anchor="@id/fab"
             >
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_receita"
+            <LinearLayout
+                android:id="@+id/ll_receita"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="40dp"
-                android:layout_marginTop="30dp"
-                android:backgroundTint="@android:color/white"
-                android:src="@drawable/ic_receita_24dp"
-                android:contentDescription="@string/title_transacoes"
-                app:layout_constraintEnd_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toTopOf="parent"
-                app:fabCustomSize="40dp"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/receita"
-                android:textSize="11sp"
-                app:layout_constraintBottom_toTopOf="@id/fab_receita"
-                app:layout_constraintStart_toStartOf="@id/fab_receita"
-                app:layout_constraintEnd_toEndOf="@id/fab_receita"
-                />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_transferencia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_marginBottom="80dp"
-                android:backgroundTint="@android:color/white"
-                android:src="@drawable/ic_transferencia_24dp"
-                android:contentDescription="@string/title_transacoes"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/receita"
+                    android:textSize="11sp"
+                    />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_receita"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_receita_24dp"
+                    android:contentDescription="@string/title_transacoes"
+                    app:backgroundTint="@android:color/white"
+                    app:tint="@null"
+                    app:fabCustomSize="40dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_transferencia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
+                android:layout_gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:fabCustomSize="40dp"/>
+                android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/transferencia"
-                android:textSize="11sp"
-                app:layout_constraintBottom_toTopOf="@id/fab_transferencia"
-                app:layout_constraintStart_toStartOf="@id/fab_transferencia"
-                app:layout_constraintEnd_toEndOf="@id/fab_transferencia"
-                />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/transferencia"
+                    android:textSize="11sp"
+                    />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_despesa"
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_transferencia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_transferencia_24dp"
+                    android:contentDescription="@string/title_transacoes"
+                    app:backgroundTint="@android:color/white"
+                    app:tint="@null"
+                    app:fabCustomSize="40dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_despesa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="30dp"
-                android:backgroundTint="@android:color/holo_blue_dark"
-                android:src="@drawable/ic_despesa_24dp"
-                android:contentDescription="@string/title_transacoes"
+                android:layout_marginBottom="80dp"
                 app:layout_constraintStart_toEndOf="@+id/guideline"
-                app:layout_constraintTop_toTopOf="parent"
-                app:fabCustomSize="40dp"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/despesa"
-                android:textSize="11sp"
-                app:layout_constraintBottom_toTopOf="@id/fab_despesa"
-                app:layout_constraintStart_toStartOf="@id/fab_despesa"
-                app:layout_constraintEnd_toEndOf="@id/fab_despesa"
-                />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/despesa"
+                    android:textSize="11sp"
+                    app:layout_constraintBottom_toTopOf="@id/fab_despesa"
+                    app:layout_constraintStart_toStartOf="@id/fab_despesa"
+                    app:layout_constraintEnd_toEndOf="@id/fab_despesa"
+                    />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_despesa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_despesa_24dp"
+                    android:contentDescription="@string/title_transacoes"
+                    app:backgroundTint="@android:color/white"
+                    app:tint="@null"
+                    app:fabCustomSize="40dp"/>
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
@@ -127,14 +156,6 @@
                 app:layout_constraintGuide_percent="0.50" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host_fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/mobile_navigation" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
