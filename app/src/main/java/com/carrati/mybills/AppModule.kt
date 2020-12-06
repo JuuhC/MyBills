@@ -1,6 +1,9 @@
 package com.carrati.mybills
 
 import android.app.Application
+import com.carrati.data.di.dataModule
+import com.carrati.domain.di.domainModule
+import com.carrati.mybills.di.presentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -12,7 +15,7 @@ class AppModule : Application() {
         startKoin {
             androidLogger()
             androidContext(this@AppModule)
-            modules(domainModule + dataModules + presentationModule)
+            modules(dataModule + domainModule + presentationModule)
         }
     }
 
