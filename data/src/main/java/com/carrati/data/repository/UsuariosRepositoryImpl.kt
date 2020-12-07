@@ -98,4 +98,8 @@ class UsuariosRepositoryImpl(api: FirebaseAPI): IUsuariosRepository {
         }
         return userMutableLiveData
     }
+
+    override fun signOutFirebase() {
+        firebaseAuth.signOut()
+    }
 }

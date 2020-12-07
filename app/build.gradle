@@ -58,6 +58,7 @@ dependencies {
 
     // External Components
     implementation "com.daimajia.androidanimations:library:2.4@aar"
+    implementation 'com.github.prolificinteractive:material-calendarview:2.0.1'
 
     // Firebase
     implementation platform("com.google.firebase:firebase-bom:$firebase_bom")

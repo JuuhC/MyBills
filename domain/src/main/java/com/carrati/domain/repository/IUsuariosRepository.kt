@@ -9,4 +9,5 @@ interface IUsuariosRepository {
     fun firebaseSignInWithGoogle(googleAuthCredential: AuthCredential?): MutableLiveData<Usuario>?
     fun createUserInFirestoreIfNotExists(authenticatedUser: Usuario): MutableLiveData<Usuario>?
     fun getUserFromFirestore(uid: String?): MutableLiveData<Usuario?>
+    fun signOutFirebase()
 }

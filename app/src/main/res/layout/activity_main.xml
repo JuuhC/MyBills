@@ -23,7 +23,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:fabCradleMargin="10dp"
-            app:fabCradleRoundedCornerRadius="10dp">
+            app:fabCradleRoundedCornerRadius="10dp"
+            app:hideOnScroll="true"
+            app:layout_scrollFlags="scroll|enterAlways">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/nav_view"
@@ -71,6 +73,7 @@
                     android:layout_gravity="center"
                     android:text="@string/receita"
                     android:textSize="11sp"
+                    android:textColor="@color/white"
                     />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -101,6 +104,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/transferencia"
                     android:textSize="11sp"
+                    android:textColor="@color/white"
                     />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -130,6 +134,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/despesa"
                     android:textSize="11sp"
+                    android:textColor="@color/white"
                     app:layout_constraintBottom_toTopOf="@id/fab_despesa"
                     app:layout_constraintStart_toStartOf="@id/fab_despesa"
                     app:layout_constraintEnd_toEndOf="@id/fab_despesa"

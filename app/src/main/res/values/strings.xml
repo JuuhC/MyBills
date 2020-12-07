@@ -6,4 +6,5 @@
     <string name="receita">Receita</string>
     <string name="despesa">Despesa</string>
     <string name="transferencia">Transferência</string>
+    <string name="sair">Sair</string>
 </resources>

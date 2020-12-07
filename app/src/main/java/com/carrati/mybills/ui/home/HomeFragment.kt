@@ -1,31 +1,77 @@
 package com.carrati.mybills.ui.home
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
+import com.carrati.data.api.FirebaseAPI
 import com.carrati.mybills.R
+import com.carrati.mybills.databinding.FragmentHomeBinding
+import com.carrati.mybills.ui.login.LoginActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HomeFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+    private val viewModel: HomeViewModel by viewModel()
+    private lateinit var binding: FragmentHomeBinding
+    private lateinit var googleSignInClient: GoogleSignInClient
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.executePendingBindings()
+
+        setHasOptionsMenu(true)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        FirebaseAPI().getFirebaseAuth().addAuthStateListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseAPI().getFirebaseAuth().removeAuthStateListener(this)
+    }
+
+    override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
+        if(firebaseAuth.currentUser == null){
+            val intent = Intent(requireActivity(), LoginActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.top_home_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.sign_out_button -> {
+                viewModel.signOutFirebase()
+                googleSignInClient.signOut()
+                true
+            }
+            else -> NavigationUI.onNavDestinationSelected(item, requireView().findNavController()) || super.onOptionsItemSelected(
+                item
+            )
+        }
     }
 }

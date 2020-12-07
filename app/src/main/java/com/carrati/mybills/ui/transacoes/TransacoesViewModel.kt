@@ -3,11 +3,13 @@ package com.carrati.mybills.ui.transacoes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.carrati.domain.usecases.usuarios.SignOutFirebaseUC
 
-class TransacoesViewModel : ViewModel() {
+class TransacoesViewModel(
+    private val signOutFirebaseUC: SignOutFirebaseUC
+) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is transações Fragment"
+    fun signOutFirebase() {
+        signOutFirebaseUC.execute()
     }
-    val text: LiveData<String> = _text
 }
