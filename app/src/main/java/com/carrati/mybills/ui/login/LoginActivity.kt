@@ -10,7 +10,6 @@ import com.carrati.domain.models.Usuario
 import com.carrati.mybills.R
 import com.carrati.mybills.databinding.ActivityLoginBinding
 import com.carrati.mybills.ui.main.MainActivity
-import com.github.fabtransitionactivity.SheetLayout
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -89,8 +88,6 @@ class LoginActivity: AppCompatActivity() {
             finish()
         }
     }
-
-    private val fabAnimationEndListener = SheetLayout.OnFabAnimationEndListener { Thread.sleep(1000) }
 
     companion object {
         private const val RC_SIGN_IN = 9001
