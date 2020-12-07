@@ -44,7 +44,6 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_plus_white_24dp"
             android:contentDescription="@string/title_transacoes"
-            app:backgroundTint="@android:color/holo_blue_dark"
             app:layout_anchor="@id/bottom_app_bar"
             app:tint="@null" />
 

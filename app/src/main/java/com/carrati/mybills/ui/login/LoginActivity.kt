@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.carrati.domain.models.Usuario
 import com.carrati.mybills.R
 import com.carrati.mybills.databinding.ActivityLoginBinding
 import com.carrati.mybills.ui.main.MainActivity
+import com.github.fabtransitionactivity.SheetLayout
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -25,6 +27,7 @@ class LoginActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
+
         checkIfUserIsAuthenticated()
 
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -43,6 +46,7 @@ class LoginActivity: AppCompatActivity() {
             if (user.isAuthenticated) {
                 obterUserFirestore(user)
             } else {
+                binding.clLoading.isVisible = false
                 signIn()
             }
         }
@@ -76,6 +80,7 @@ class LoginActivity: AppCompatActivity() {
     }
 
     private fun obterUserFirestore(user: Usuario) {
+
         viewModel.createUserFirestore(user)
         viewModel.createdUserLiveData?.observe(this) { createdUser ->
             val intent = Intent(this, MainActivity::class.java)
@@ -84,6 +89,8 @@ class LoginActivity: AppCompatActivity() {
             finish()
         }
     }
+
+    private val fabAnimationEndListener = SheetLayout.OnFabAnimationEndListener { Thread.sleep(1000) }
 
     companion object {
         private const val RC_SIGN_IN = 9001

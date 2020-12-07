@@ -35,6 +35,7 @@ android {
 dependencies {
     implementation project(":domain")
     implementation "androidx.core:core-ktx:$androidx_core"
+    implementation "androidx.paging:paging-runtime:$paging"
 
     //Firebase
     implementation platform("com.google.firebase:firebase-bom:$firebase_bom")

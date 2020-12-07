@@ -19,6 +19,7 @@ buildscript {
         espresso = "3.3.0"
         firebase_bom = "26.1.1"
         google_auth = "19.0.0"
+        paging = "3.0.0-alpha10"
     }
 
     repositories {
@@ -40,6 +41,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
 }
 

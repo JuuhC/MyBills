@@ -54,6 +54,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipe_refesh"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$navigation"
+    implementation "androidx.paging:paging-runtime-ktx:$paging"
 
     // External Components
     implementation "com.daimajia.androidanimations:library:2.4@aar"
