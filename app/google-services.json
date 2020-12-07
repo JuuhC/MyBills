@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "650050044427",
+    "project_id": "mybills-44988",
+    "storage_bucket": "mybills-44988.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650050044427:android:496b4085f6660c6b7a3d0e",
+        "android_client_info": {
+          "package_name": "com.carrati.mybills"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "650050044427-8j7p1m2oe23kv7ih2hh0pbhvhbm12na8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carrati.mybills",
+            "certificate_hash": "94fd1f2247f4ebfed2a8fb8cb9e9d38e9892ef3c"
+          }
+        },
+        {
+          "client_id": "650050044427-8ap47nd25fnihs6l2p33nq4job4c9u5a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJcFAybfCKktgfModvwiz1ezIu2GI3mkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "650050044427-8ap47nd25fnihs6l2p33nq4job4c9u5a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

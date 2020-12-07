@@ -17,6 +17,8 @@ buildscript {
         junit = "4.13.1"
         junit_ext = "1.1.2"
         espresso = "3.3.0"
+        firebase_bom = "26.1.1"
+        google_auth = "19.0.0"
     }
 
     repositories {
@@ -27,6 +29,8 @@ buildscript {
         classpath "com.android.tools.build:gradle:$build_gradle"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_plugin"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigation"
+        classpath 'com.google.gms:google-services:4.3.4'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
