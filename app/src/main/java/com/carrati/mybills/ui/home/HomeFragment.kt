@@ -7,9 +7,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.carrati.data.api.FirebaseAPI
+import com.carrati.domain.models.Usuario
 import com.carrati.mybills.R
 import com.carrati.mybills.databinding.FragmentHomeBinding
 import com.carrati.mybills.ui.login.LoginActivity
+import com.carrati.mybills.ui.main.ISupportActionBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -22,12 +24,16 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
     private val viewModel: HomeViewModel by viewModel()
     private lateinit var binding: FragmentHomeBinding
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var usuario: Usuario
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+
         val binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.executePendingBindings()
+        (requireActivity() as ISupportActionBar).getAB()?.elevation = 5F
 
         setHasOptionsMenu(true)
 
@@ -35,8 +41,16 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
+
+        viewModel.getUsuario()
+        viewModel.usuarioLiveData?.observe(viewLifecycleOwner) {
+            this.usuario = it
+            (requireActivity() as ISupportActionBar).getAB()?.title = "Olá, ${usuario.name}"
+        }
     }
 
     override fun onStart() {

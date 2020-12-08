@@ -34,7 +34,6 @@ android {
 
 dependencies {
     implementation "androidx.core:core-ktx:$androidx_core"
-    implementation "androidx.paging:paging-runtime:$paging"
 
     // Kotlin Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"

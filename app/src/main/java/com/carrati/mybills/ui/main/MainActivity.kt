@@ -3,6 +3,7 @@ package com.carrati.mybills.ui.main
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -17,7 +18,7 @@ import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ISupportActionBar {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -116,4 +117,12 @@ class MainActivity : AppCompatActivity() {
             .rotation(if (rotate) 135f else 0f)
         return rotate
     }
+
+    override fun getAB(): ActionBar? {
+        return supportActionBar
+    }
+}
+
+interface ISupportActionBar {
+    fun getAB(): ActionBar?
 }

@@ -11,4 +11,7 @@
     <color name="light_yellow">#FFFAC853</color>
     <color name="light_green">#2AA653</color>
     <color name="dark_green">#118336</color>
+    <color name="light_gray">#808080</color>
+    <color name="colorPink">#F866A1</color>
+    <color name="colorPinkDark">#DB5B8F</color>
 </resources>

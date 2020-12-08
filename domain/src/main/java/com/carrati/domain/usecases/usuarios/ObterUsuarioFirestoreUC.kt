@@ -7,7 +7,7 @@ import com.google.firebase.auth.AuthCredential
 
 class ObterUsuarioFirestoreUC(private val repo: IUsuariosRepository) {
 
-    suspend fun execute(uid: String): MutableLiveData<Usuario?>{
-        return repo.getUserFromFirestore(uid)
+    fun execute(): MutableLiveData<Usuario>?{
+        return repo.getUserFromFirestore()
     }
 }

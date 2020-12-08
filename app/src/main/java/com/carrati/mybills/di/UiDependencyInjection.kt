@@ -8,6 +8,6 @@ import org.koin.dsl.module
 
 val presentationModule = module {
     viewModel { LoginViewModel(get(),get(),get()) }
-    viewModel { HomeViewModel(get()) }
-    viewModel { TransacoesViewModel(get()) }
+    viewModel { HomeViewModel(get(), get()) }
+    viewModel { TransacoesViewModel(get(), get()) }
 }

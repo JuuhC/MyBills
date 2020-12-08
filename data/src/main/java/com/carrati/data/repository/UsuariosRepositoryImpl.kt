@@ -83,8 +83,9 @@ class UsuariosRepositoryImpl(api: FirebaseAPI): IUsuariosRepository {
         return newUserMutableLiveData
     }
 
-    override fun getUserFromFirestore(uid: String?): MutableLiveData<Usuario?> {
-        val userMutableLiveData: MutableLiveData<Usuario?> = MutableLiveData<Usuario?>()
+    override fun getUserFromFirestore(): MutableLiveData<Usuario>? {
+        val uid = firebaseAuth.currentUser?.uid
+        val userMutableLiveData: MutableLiveData<Usuario> = MutableLiveData<Usuario>()
         usersRef.document(uid!!).get().addOnCompleteListener { userTask: Task<DocumentSnapshot?> ->
             if (userTask.isSuccessful) {
                 val document = userTask.result

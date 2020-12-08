@@ -9,8 +9,7 @@
             type="com.carrati.mybills.ui.transacoes.TransacoesViewModel"/>
     </data>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -18,16 +17,38 @@
             android:id="@+id/calendario"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:background="@color/light_green"
+            android:elevation="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:mcv_showOtherDates="all"
-            app:mcv_selectionColor="#00F"
             app:mcv_tileSize="50dp"
+            app:mcv_headerTextAppearance="@style/CustomTextAppearance"
+            app:mcv_leftArrow="@drawable/ic_arrow_left_white_24dp"
+            app:mcv_rightArrow="@drawable/ic_arrow_right_white_24dp"
             />
 
+        <include layout="@layout/progressbar_carregamento"
+            android:id="@+id/ll_loading"
+            app:layout_constraintTop_toBottomOf="@id/calendario"
+            isVisible="@{viewModel.loading}" />
+
+        <include
+            layout="@layout/layout_error_with_refresh"
+            android:id="@+id/ll_erro"
+            app:layout_constraintTop_toBottomOf="@id/calendario"
+            isVisible="@{viewModel.isError &amp;&amp; !viewModel.loading}" />
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/transactionsList"
+            android:id="@+id/rv_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            />
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/calendario"
+            isVisible="@{!viewModel.isError() &amp;&amp; !viewModel.loading"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
