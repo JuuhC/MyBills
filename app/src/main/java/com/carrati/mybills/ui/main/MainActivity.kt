@@ -1,6 +1,7 @@
 package com.carrati.mybills.ui.main
 
 import android.animation.AnimatorListenerAdapter
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.ActionBar
@@ -14,6 +15,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.carrati.mybills.R
 import com.carrati.mybills.databinding.ActivityMainBinding
+import com.carrati.mybills.ui.despesa.DespesaActivity
+import com.carrati.mybills.ui.receita.ReceitaActivity
+import com.carrati.mybills.ui.transferencia.TransferenciaActivity
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 
@@ -49,6 +53,7 @@ class MainActivity : AppCompatActivity(), ISupportActionBar {
                 contractFab()
             }
         }
+        configureSubFabs()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -116,6 +121,24 @@ class MainActivity : AppCompatActivity(), ISupportActionBar {
             .setListener(object : AnimatorListenerAdapter() {})
             .rotation(if (rotate) 135f else 0f)
         return rotate
+    }
+
+    private fun configureSubFabs(){
+        binding.fabDespesa.setOnClickListener {
+            val intent = Intent(this, DespesaActivity::class.java)
+            startActivity(intent)
+            this.onStop()
+        }
+        binding.fabReceita.setOnClickListener {
+            val intent = Intent(this, ReceitaActivity::class.java)
+            startActivity(intent)
+            this.onStop()
+        }
+        binding.fabTransferencia.setOnClickListener {
+            val intent = Intent(this, TransferenciaActivity::class.java)
+            startActivity(intent)
+            this.onStop()
+        }
     }
 
     override fun getAB(): ActionBar? {

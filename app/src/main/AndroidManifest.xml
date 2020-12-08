@@ -23,9 +23,22 @@
         </activity>
 
         <activity
-            android:name=".ui.main.MainActivity">
-        </activity>
+            android:name=".ui.main.MainActivity"/>
+
+        <activity
+            android:name=".ui.despesa.DespesaActivity"
+            android:theme="@style/DespesaTheme"/>
+
+        <activity
+            android:name=".ui.receita.ReceitaActivity"
+            android:theme="@style/ReceitaTheme"/>
+
+        <activity
+            android:name=".ui.transferencia.TransferenciaActivity"
+            android:theme="@style/TransferenciaTheme"/>
 
     </application>
+
+
 
 </manifest>

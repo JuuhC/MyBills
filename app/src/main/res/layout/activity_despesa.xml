@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.carrati.mybills.ui.despesa.DespesaViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:background="@color/colorPink"
+            android:gravity="center|end"
+            android:orientation="horizontal"
+            android:padding="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="R$ "
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textColor="@color/black_translucid"
+                android:background="@android:color/transparent"
+                android:editable="false"
+                />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_valor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:hint="0,00"
+                android:inputType="numberDecimal"
+                android:textColor="@color/black_translucid"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_efetuado"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="42dp"
+            android:layout_marginBottom="16dp"
+            android:text="Pago"
+            android:textAlignment="viewStart"
+            android:textColor="@color/light_gray"
+            app:layout_constraintBottom_toTopOf="@+id/tv_data_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            app:layout_constraintVertical_bias="0.16000003"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tv_data_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Data*"
+            android:textColorHint="@color/light_gray"
+            app:boxBackgroundColor="@color/white"
+            app:boxBackgroundMode="filled"
+            app:helperText="*Obrigatório"
+            app:helperTextEnabled="true"
+            app:helperTextTextColor="@color/light_gray"
+            app:helperTextTextAppearance="@style/HelperTextAppearance"
+            app:errorEnabled="true"
+            app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:layout_constraintBottom_toTopOf="@+id/tv_descr_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/switch_efetuado">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
+                android:textSize="14sp"
+                android:inputType="none"
+                android:imeOptions="actionNone"
+                android:editable="false"
+                app:drawableEndCompat="@drawable/ic_calendar_gray_24dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tv_descr_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Descricao*"
+            android:textColorHint="@color/light_gray"
+            app:boxBackgroundColor="@color/white"
+            app:boxBackgroundMode="filled"
+            app:helperText="*Obrigatório"
+            app:helperTextEnabled="true"
+            app:helperTextTextColor="@color/light_gray"
+            app:helperTextTextAppearance="@style/HelperTextAppearance"
+            app:errorEnabled="true"
+            app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:layout_constraintBottom_toTopOf="@+id/spinner_conta"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_data_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_descr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            style="@style/HelperTextAppearance"
+            android:text="     *Obrigatório"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_conta"
+            />
+
+        <Spinner
+            android:id="@+id/spinner_conta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_descr_layout"
+            />
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_descr_layout"
+            app:layout_constraintVertical_bias="0.8"
+            android:elevation="6dp"
+            isVisible="@{viewModel.loading}"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_descr_layout"
+            app:layout_constraintVertical_bias="0.8"
+            app:srcCompat="@drawable/ic_check_white_24dp"
+            app:tint="@null"
+            isVisible="@{!viewModel.loading}"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

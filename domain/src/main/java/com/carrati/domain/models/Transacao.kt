@@ -1,7 +1,11 @@
 package com.carrati.domain.models
 
+import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.IgnoreExtraProperties
+
+@IgnoreExtraProperties
 class Transacao {
-    var id: String? = null
+    @Exclude var id: String? = null
     var tipo: String? = null
     var data: String? = null
     var nome: String? = null

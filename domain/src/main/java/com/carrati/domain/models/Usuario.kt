@@ -10,6 +10,8 @@ class Usuario: Serializable {
     var name: String? = null
     var email: String? = null
     var photoUrl: String? = null
+    var despesas: Double = 0.0
+    var receitas: Double = 0.0
 
     @get:Exclude var isAuthenticated = false
     @get:Exclude var isNew = false

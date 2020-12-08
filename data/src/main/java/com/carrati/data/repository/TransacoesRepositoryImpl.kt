@@ -1,9 +1,9 @@
 package com.carrati.data.repository
 
 import com.carrati.data.api.FirebaseAPI
-import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.repository.ITransacoesRepository
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 
 import kotlinx.coroutines.tasks.await
@@ -28,14 +28,15 @@ class TransacoesRepositoryImpl(api: FirebaseAPI): ITransacoesRepository {
             .collection("transacoes")
 
         val query = if(!filter.isNullOrEmpty()){
-            transacoesRef.whereEqualTo("conta", filter).orderBy("data", Query.Direction.DESCENDING)
+            transacoesRef.whereEqualTo("conta", filter)
         } else {
             transacoesRef
         }
+        query.orderBy("data", Query.Direction.DESCENDING)
 
         val resultList = query.get().await()
 
-        val result =  resultList.map {
+        return resultList.map {
             Transacao().apply {
                 id = it.id
                 tipo = it.getString("tipo")
@@ -46,7 +47,34 @@ class TransacoesRepositoryImpl(api: FirebaseAPI): ITransacoesRepository {
                 efetuado = it.getBoolean("efetuado")
             }
         }
-        result
-        return result
+    }
+
+    override suspend fun cadastrarReceitaDespesa(uid: String, periodo: String, transacao: Transacao){
+        FirebaseAPI().getFirebaseDb()
+            .collection("users")
+            .document(uid)
+            .collection("periodos")
+            .document(periodo)
+            .collection("transacoes")
+            .add(transacao).await()
+    }
+
+    override suspend fun atualizarSaldo(uid: String, periodo: String, transacao: Transacao ){
+        FirebaseAPI().getFirebaseDb()
+            .collection("users")
+            .document(uid)
+            .update(transacao.tipo+"s", FieldValue.increment(transacao.valor!!)).await()
+
+        val saldoConta = if (transacao.tipo == "receita") {
+            FieldValue.increment(transacao.valor!!)
+        } else {
+            FieldValue.increment(transacao.valor!!.unaryMinus())
+        }
+        FirebaseAPI().getFirebaseDb()
+            .collection("users")
+            .document(uid)
+            .collection("contas")
+            .document(transacao.conta!!)
+            .update("saldo", saldoConta).await()
     }
 }
