@@ -8,6 +8,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -22,7 +23,7 @@ import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 
 
-class MainActivity : AppCompatActivity(), ISupportActionBar {
+class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -144,8 +145,16 @@ class MainActivity : AppCompatActivity(), ISupportActionBar {
     override fun getAB(): ActionBar? {
         return supportActionBar
     }
+
+    override fun getFromActivity(): ActivityMainBinding {
+        return binding
+    }
 }
 
 interface ISupportActionBar {
     fun getAB(): ActionBar?
+}
+
+interface IBinding {
+    fun getFromActivity(): ActivityMainBinding
 }

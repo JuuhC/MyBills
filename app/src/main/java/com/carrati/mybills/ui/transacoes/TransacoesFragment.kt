@@ -17,8 +17,11 @@ import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
 import com.carrati.mybills.R
 import com.carrati.mybills.databinding.FragmentTransacoesBinding
+import com.carrati.mybills.ui.main.IBinding
 import com.carrati.mybills.ui.main.ISupportActionBar
 import com.carrati.mybills.utils.MarginItemDecoration
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TransacoesFragment : Fragment() {
@@ -26,6 +29,7 @@ class TransacoesFragment : Fragment() {
     private val viewModel: TransacoesViewModel by viewModel()
     private lateinit var binding: FragmentTransacoesBinding
     private var adapter = TransacoesAdapter(listOf())
+    private lateinit var calendario: MaterialCalendarView
 
     private lateinit var usuario: Usuario
     private var selectedPeriod: String? = null
@@ -49,6 +53,7 @@ class TransacoesFragment : Fragment() {
         (requireActivity() as ISupportActionBar).getAB()?.elevation = 0F
         setHasOptionsMenu(true)
 
+        calendario = (requireActivity() as IBinding).getFromActivity().calendario
         return binding.root
     }
 
@@ -66,10 +71,10 @@ class TransacoesFragment : Fragment() {
     }
 
     private fun configCalendar() {
-        val month = String.format("%02d", binding.calendario.currentDate.month)
-        selectedPeriod = "${binding.calendario.currentDate.year}-$month"
+        val month = String.format("%02d", calendario.currentDate.month)
+        selectedPeriod = "${calendario.currentDate.year}-$month"
 
-        binding.calendario.setOnMonthChangedListener { _, date ->
+        calendario.setOnMonthChangedListener { _, date ->
             val monthNew = String.format("%02d", date.month)
             selectedPeriod = "${date.year}-$monthNew"
 

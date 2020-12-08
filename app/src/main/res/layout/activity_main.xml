@@ -9,13 +9,36 @@
         android:layout_height="match_parent"
         android:background="#E8E8E8">
 
-        <fragment
-            android:id="@+id/nav_host_fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/mobile_navigation" />
+            android:orientation="vertical">
+
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                android:id="@+id/calendario"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/light_green"
+                android:elevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:mcv_showOtherDates="all"
+                app:mcv_tileSize="50dp"
+                app:mcv_headerTextAppearance="@style/CustomTextAppearance"
+                app:mcv_leftArrow="@drawable/ic_arrow_left_white_24dp"
+                app:mcv_rightArrow="@drawable/ic_arrow_right_white_24dp"
+                />
+
+            <fragment
+                android:id="@+id/nav_host_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/mobile_navigation"
+                />
+        </LinearLayout>
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"
@@ -55,8 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
-            app:layout_anchor="@id/fab"
-            >
+            app:layout_anchor="@id/fab">
 
             <LinearLayout
                 android:id="@+id/ll_receita"

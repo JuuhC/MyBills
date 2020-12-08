@@ -11,11 +11,13 @@ import com.carrati.domain.models.Usuario
 import com.carrati.mybills.R
 import com.carrati.mybills.databinding.FragmentHomeBinding
 import com.carrati.mybills.ui.login.LoginActivity
+import com.carrati.mybills.ui.main.IBinding
 import com.carrati.mybills.ui.main.ISupportActionBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -23,6 +25,7 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
 
     private val viewModel: HomeViewModel by viewModel()
     private lateinit var binding: FragmentHomeBinding
+    private lateinit var calendario: MaterialCalendarView
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var usuario: Usuario
 
@@ -33,7 +36,9 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.executePendingBindings()
-        (requireActivity() as ISupportActionBar).getAB()?.elevation = 5F
+        (requireActivity() as ISupportActionBar).getAB()?.elevation = 0F
+
+        calendario = (requireActivity() as IBinding).getFromActivity().calendario
 
         setHasOptionsMenu(true)
 
