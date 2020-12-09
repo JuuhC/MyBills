@@ -1,5 +1,6 @@
 package com.carrati.mybills.ui.home
 
+import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,9 @@ class HomeViewModel(
 ) : ViewModel() {
 
     var usuarioLiveData: LiveData<Usuario>? = null
+
+    val loading = ObservableField<Boolean>(false)
+    var isError = ObservableField<Boolean>(false)
 
     fun signOutFirebase() {
         signOutFirebaseUC.execute()
