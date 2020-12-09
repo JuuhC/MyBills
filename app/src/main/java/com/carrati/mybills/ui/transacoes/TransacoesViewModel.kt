@@ -45,12 +45,12 @@ class TransacoesViewModel(
         }
     }
 
-    fun deletarTransacao(uid: String, periodo: String, position: Int, transacao: Transacao) {
+    fun deletarTransacao(uid: String, periodo: String, transacao: Transacao) {
         deletarLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 deletarTransacaoUC.execute(uid, periodo, transacao)
-                deletarLiveData.postValue(Response.success(position))
+                deletarLiveData.postValue(Response.success(transacao))
             } catch (e: Exception) {
                 Log.e("exception transacoes", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)

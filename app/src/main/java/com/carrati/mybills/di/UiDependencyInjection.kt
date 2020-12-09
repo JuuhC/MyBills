@@ -14,7 +14,7 @@ val presentationModule = module {
     viewModel { HomeViewModel(get(), get(), get(), get(), get()) }
     viewModel { TransacoesViewModel(get(), get(), get()) }
 
-    viewModel { DespesaViewModel(get(), get(), get()) }
-    viewModel { ReceitaViewModel(get(), get(), get()) }
+    viewModel { DespesaViewModel(get(), get(), get(), get()) }
+    viewModel { ReceitaViewModel(get(), get(), get(), get()) }
     viewModel { TransferenciaViewModel(get(), get(), get()) }
 }

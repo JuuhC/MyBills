@@ -128,16 +128,19 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
         binding.fabDespesa.setOnClickListener {
             val intent = Intent(this, DespesaActivity::class.java)
             startActivity(intent)
+            contractFab()
             this.onStop()
         }
         binding.fabReceita.setOnClickListener {
             val intent = Intent(this, ReceitaActivity::class.java)
             startActivity(intent)
+            contractFab()
             this.onStop()
         }
         binding.fabTransferencia.setOnClickListener {
             val intent = Intent(this, TransferenciaActivity::class.java)
             startActivity(intent)
+            contractFab()
             this.onStop()
         }
     }

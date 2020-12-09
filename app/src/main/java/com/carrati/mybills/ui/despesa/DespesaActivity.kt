@@ -49,9 +49,13 @@ class DespesaActivity: AppCompatActivity() {
         if(transacao != null){
             binding.edtData.setText(transacao!!.data ?: "")
             binding.edtDescr.setText(transacao!!.nome ?: "")
-            binding.edtValor.setText(String.format("R$%.2f", transacao!!.valor ?: 0.0))
+            binding.edtValor.setText(String.format("%.2f", transacao!!.valor ?: 0.0))
             binding.switchEfetuado.isChecked = transacao!!.efetuado ?: false
+
+            selectedPeriod = transacao!!.data!!.subSequence(0, 7).toString()
         }
+
+        binding.edtData.requestFocus()
     }
 
     private fun saveTransacao(){
@@ -72,21 +76,28 @@ class DespesaActivity: AppCompatActivity() {
             return
         }
 
-        val transacao = Transacao().apply {
+        val transacaoNew = Transacao().apply {
             this.tipo = "despesa"
             this.data = binding.edtData.text.toString()
             this.nome = binding.edtDescr.text.toString()
             this.conta = "itau"//binding.spinnerConta.selectedItem.toString()
             var doubleValue = 0.0
             try {
-                doubleValue = java.lang.Double.parseDouble(binding.edtValor.text.toString())
+                doubleValue = java.lang.Double.parseDouble(binding.edtValor.text.toString().replace(",", "."))
             } catch (e: NumberFormatException) { }
             this.valor = doubleValue
             this.efetuado = binding.switchEfetuado.isChecked
         }
 
-        viewModel.salvarTransacao(usuario.uid!!, selectedPeriod!!, transacao)
         viewModel.despesaLiveData.observe(this, observerSalvar)
+        if(this.transacao != null){
+            transacaoNew.id = this.transacao!!.id
+            viewModel.editarTransacao(usuario.uid!!, selectedPeriod!!, transacaoNew, this.transacao)
+        }
+        else {
+            viewModel.salvarTransacao(usuario.uid!!, selectedPeriod!!, transacaoNew)
+        }
+
     }
 
     private fun processResponseSave(response: Response?){

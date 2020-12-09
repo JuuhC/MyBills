@@ -66,16 +66,17 @@ class TransacoesAdapter(
         }
     }
 
-    fun removerItem(position: Int){
+    fun removerItem(transacao: Transacao){
         val list = itens.toMutableList()
-        list.removeAt(position)
+        list.removeIf{ it.id == transacao.id }
         itens = list.toList()
-        notifyItemRemoved(position)
+        listaFiltrada.removeIf{ it.id == transacao.id  }
+        notifyDataSetChanged()
     }
 
     fun filtrarTransacoes(filtro: String){
         listaFiltrada = itens.toMutableList()
-        if(filtro.isNotEmpty()) listaFiltrada.removeIf { it.nome != filtro }
+        if(filtro.isNotEmpty()) listaFiltrada.removeIf { !it.nome!!.contains(filtro) }
     }
 
     inner class DespesaViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(parent.inflate(R.layout.item_despesa)){

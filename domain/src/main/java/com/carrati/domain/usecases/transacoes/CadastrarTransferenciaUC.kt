@@ -16,11 +16,11 @@ class CadastrarTransferenciaUC(private val repo: ITransacoesRepository) {
         repo.cadastrarReceitaDespesa(uid, period, transacao2)
 
         if(transacao1.efetuado != null && transacao1.efetuado!!) {
-            repo.atualizarSaldo(uid,period,transacao1)
+            repo.atualizarSaldo(uid,period,transacao1,transferencia = true)
         }
 
         if(transacao2.efetuado != null && transacao2.efetuado!!) {
-            repo.atualizarSaldo(uid,period,transacao2)
+            repo.atualizarSaldo(uid,period,transacao2,transferencia = true)
         }
     }
 }

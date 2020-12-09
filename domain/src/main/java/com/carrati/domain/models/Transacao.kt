@@ -6,7 +6,7 @@ import java.io.Serializable
 
 @IgnoreExtraProperties
 class Transacao: Serializable {
-    @Exclude var id: String? = null
+    @get:Exclude var id: String? = null
     var tipo: String? = null
     var data: String? = null
     var nome: String? = null

@@ -105,21 +105,26 @@ class TransacoesFragment : Fragment() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Excluir Transação")
-                    .setMessage("Você tem certeza que deseja excluir esta transação?")
-                    .setCancelable(false)
-                    .setPositiveButton("Confirmar") { _, _ ->
-                        val position: Int = viewHolder.absoluteAdapterPosition
-                        val transacao = adapter.itens[position]
+                val position: Int = viewHolder.absoluteAdapterPosition
+                val transacao = adapter.itens[position]
 
-                        viewModel.deletarTransacao(usuario.uid!!, selectedPeriod!!, position, transacao)
-                        viewModel.deletarLiveData.observe(viewLifecycleOwner, observerDeletar)
-                    }
-                    .setNegativeButton("Cancelar") { _, _ ->
-                        adapter.notifyDataSetChanged()
-                    }
-                    .create().show()
+                if(transacao.nome!!.contains("Transferencia", true)){
+                    Toast.makeText(requireContext(), "Não é possivel excluir transferencia.", Toast.LENGTH_LONG).show()
+                    adapter.notifyDataSetChanged()
+                } else {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Excluir Transação")
+                        .setMessage("Você tem certeza que deseja excluir esta transação?")
+                        .setCancelable(false)
+                        .setPositiveButton("Confirmar") { _, _ ->
+                            viewModel.deletarTransacao(usuario.uid!!, selectedPeriod!!, transacao)
+                            viewModel.deletarLiveData.observe(viewLifecycleOwner, observerDeletar)
+                        }
+                        .setNegativeButton("Cancelar") { _, _ ->
+                            adapter.notifyDataSetChanged()
+                        }
+                        .create().show()
+                }
             }
         }
         ItemTouchHelper(itemTouch).attachToRecyclerView(binding.rvList)
@@ -168,7 +173,7 @@ class TransacoesFragment : Fragment() {
                 viewModel.deletarLiveData.removeObserver(observerDeletar)
                 viewModel.deletarLiveData.value = Response.loading()
 
-                adapter.removerItem(response.data as Int)
+                adapter.removerItem(response.data as Transacao)
             }
             Response.Status.ERROR -> {
                 Log.e("erro delete", response.error.toString())

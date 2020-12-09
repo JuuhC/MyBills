@@ -6,7 +6,6 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.carrati.domain.models.Conta
@@ -14,11 +13,10 @@ import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
 import com.carrati.mybills.R
-import com.carrati.mybills.databinding.ActivityReceitaBinding
 import com.carrati.mybills.databinding.ActivityTransferenciaBinding
-import com.carrati.mybills.ui.transacoes.TransacoesAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.LocalDate
+import java.util.*
 
 class TransferenciaActivity: AppCompatActivity() {
     private lateinit var binding: ActivityTransferenciaBinding
@@ -44,6 +42,7 @@ class TransferenciaActivity: AppCompatActivity() {
 
         binding.fabSave.setOnClickListener { saveTransacao() }
         binding.edtData.setOnClickListener { inflateCalendar() }
+        binding.edtData.requestFocus()
     }
 
     private fun saveTransacao(){
@@ -153,10 +152,16 @@ class TransferenciaActivity: AppCompatActivity() {
 
         val defaultDate = LocalDate.now()
 
-        DatePickerDialog(
+        val calendar = Calendar.getInstance()
+        calendar.set(defaultDate.year, defaultDate.monthValue - 1, defaultDate.dayOfMonth)
+
+        val dialog = DatePickerDialog(
             this,
             mDateSetListener,
             defaultDate.year, defaultDate.monthValue - 1, defaultDate.dayOfMonth
-        ).show()
+        )
+
+        dialog.datePicker.maxDate = calendar.timeInMillis
+        dialog.show()
     }
 }

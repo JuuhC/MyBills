@@ -11,6 +11,7 @@ import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
 import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarReceitaDespesaUC
+import com.carrati.domain.usecases.transacoes.EditarTransacaoUC
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,8 @@ import java.lang.Exception
 class DespesaViewModel(
     private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
     private val cadastrarReceitaDespesaUC: CadastrarReceitaDespesaUC,
-    private val listarContasUC: ListarContasUC
+    private val listarContasUC: ListarContasUC,
+    private val editarTransacaoUC: EditarTransacaoUC
 ): ViewModel() {
 
     var usuarioLiveData: LiveData<Usuario>? = null
@@ -53,6 +55,20 @@ class DespesaViewModel(
                 Log.e("exception listar conta", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
                 listarContasLiveData.postValue(Response.error(e))
+            }
+        }
+    }
+
+    fun editarTransacao(uid: String, periodo: String, transacao: Transacao, transacaoAntiga: Transacao? = null){
+        despesaLiveData.postValue(Response.loading())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                editarTransacaoUC.execute(uid, periodo, transacao, transacaoAntiga)
+                despesaLiveData.postValue(Response.success(true))
+            } catch (e: Exception) {
+                Log.e("exception save despesa", e.toString())
+                FirebaseAPI().sendThrowableToFirebase(e)
+                despesaLiveData.postValue(Response.error(e))
             }
         }
     }

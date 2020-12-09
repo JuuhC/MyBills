@@ -19,4 +19,5 @@ val domainModule = module {
     factory { ListarContasUC(get()) }
     factory { CriarContaUC(get()) }
     factory { DeletarTransacaoUC(get()) }
+    factory { EditarTransacaoUC(get()) }
 }

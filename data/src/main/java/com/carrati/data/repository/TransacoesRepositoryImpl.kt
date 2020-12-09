@@ -46,25 +46,40 @@ class TransacoesRepositoryImpl(private val api: FirebaseAPI): ITransacoesReposit
             .add(transacao).await()
     }
 
-    override suspend fun atualizarSaldo(uid: String, periodo: String, transacao: Transacao, delete: Boolean ){
+    override suspend fun atualizarSaldo(uid: String, periodo: String, transacao: Transacao,
+                                        transacaoAntiga: Transacao?, delete: Boolean, transferencia: Boolean ){
         val valor = transacao.valor!!
 
-        api.getFirebaseDb()
-            .collection("users")
-            .document(uid)
-            .collection("periodos")
-            .document(periodo)
-            .update(transacao.tipo+"s",
-                if(delete) FieldValue.increment(valor.unaryMinus())
-                else FieldValue.increment(valor)
-            ).await()
+        //atualizar balança - receitas e despesas do mes
+        if(!transferencia) {
+            api.getFirebaseDb()
+                .collection("users")
+                .document(uid)
+                .collection("periodos")
+                .document(periodo)
+                .update(
+                    transacao.tipo + "s",
+                    when {
+                        delete -> FieldValue.increment(valor.unaryMinus())
+                        transacaoAntiga != null && transacaoAntiga.efetuado!! -> FieldValue.increment(valor - transacaoAntiga.valor!!)
+                        else -> FieldValue.increment(valor)
+                    }
+                ).await()
+        }
 
+        //atualizar saldo da conta
         val saldoConta = if (transacao.tipo == "receita") {
-            if(delete) FieldValue.increment(valor.unaryMinus())
-            else FieldValue.increment(valor)
+            when {
+                delete -> FieldValue.increment(valor.unaryMinus())
+                transacaoAntiga?.valor != null  && transacaoAntiga.efetuado!! -> FieldValue.increment(valor - transacaoAntiga.valor!!)
+                else -> FieldValue.increment(valor)
+            }
         } else {
-            if(delete) FieldValue.increment(valor)
-            else FieldValue.increment(valor.unaryMinus())
+            when {
+                delete -> FieldValue.increment(valor)
+                transacaoAntiga?.valor != null  && transacaoAntiga.efetuado!! -> FieldValue.increment((valor - transacaoAntiga.valor!!).unaryMinus())
+                else -> FieldValue.increment(valor.unaryMinus())
+            }
         }
         api.getFirebaseDb()
             .collection("users")
@@ -97,5 +112,16 @@ class TransacoesRepositoryImpl(private val api: FirebaseAPI): ITransacoesReposit
             .collection("transacoes")
             .document(transacao.id!!)
             .delete().await()
+    }
+
+    override suspend fun editarTransacao(uid: String, periodo: String, transacao: Transacao) {
+        api.getFirebaseDb()
+            .collection("users")
+            .document(uid)
+            .collection("periodos")
+            .document(periodo)
+            .collection("transacoes")
+            .document(transacao.id!!)
+            .set(transacao).await()
     }
 }

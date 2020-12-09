@@ -80,7 +80,7 @@ class LoginActivity: AppCompatActivity() {
                 }
             } catch (e: ApiException) {
                 Log.e("Error", e.toString())
-                Toast.makeText(this, "Erro ao fazer login: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Erro ao fazer login", Toast.LENGTH_LONG).show()
                 binding.clLoading.isVisible = false
             }
         }
