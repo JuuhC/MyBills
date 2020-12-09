@@ -15,7 +15,8 @@ class ContasRepositoryImpl(api: FirebaseAPI): IContasRepository {
             .collection("users")
             .document(uid)
             .collection("contas")
-            .add(conta).await()
+            .document(conta.nome!!)
+            .set(conta).await()
     }
 
     //listar contas com nome e saldo total

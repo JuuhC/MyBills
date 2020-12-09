@@ -2,9 +2,13 @@ package com.carrati.mybills.ui.receita
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import com.carrati.domain.models.Conta
 import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
@@ -16,8 +20,13 @@ import java.time.LocalDate
 class ReceitaActivity: AppCompatActivity() {
     private lateinit var binding: ActivityReceitaBinding
     private val viewModel: ReceitaViewModel by viewModel()
+
     private lateinit var usuario: Usuario
     private var selectedPeriod: String? = null
+    private var transacao: Transacao? = null
+
+    private var observerListarConta = Observer<Response> { processResponseListarConta(it) }
+    private var observerSalvar = Observer<Response> { processResponseSave(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,12 +36,23 @@ class ReceitaActivity: AppCompatActivity() {
         viewModel.getUsuario()
         viewModel.usuarioLiveData?.observe(this) {
             this.usuario = it
+
+            viewModel.listarContasLiveData.observe(this, observerListarConta)
+            viewModel.carregarContas(it.uid!!)
         }
 
         binding.fabSave.setOnClickListener { saveTransacao() }
         binding.edtData.setOnClickListener { inflateCalendar() }
         binding.switchEfetuado.setOnClickListener {
             binding.switchEfetuado.text = if(binding.switchEfetuado.isChecked) "Pago" else "Não pago"
+        }
+
+        transacao = intent.getSerializableExtra("transacao") as Transacao?
+        if(transacao != null){
+            binding.edtData.setText(transacao!!.data ?: "")
+            binding.edtDescr.setText(transacao!!.nome ?: "")
+            binding.edtValor.setText(String.format("R$%.2f", transacao!!.valor ?: 0.0))
+            binding.switchEfetuado.isChecked = transacao!!.efetuado ?: false
         }
     }
 
@@ -68,7 +88,7 @@ class ReceitaActivity: AppCompatActivity() {
         }
 
         viewModel.salvarTransacao(usuario.uid!!, selectedPeriod!!, transacao)
-        viewModel.receitaLiveData.observe(this) { processResponseSave(it) }
+        viewModel.receitaLiveData.observe(this, observerSalvar)
     }
 
     private fun processResponseSave(response: Response?){
@@ -84,6 +104,36 @@ class ReceitaActivity: AppCompatActivity() {
             Response.Status.ERROR -> {
                 viewModel.loading.set(false)
                 Toast.makeText(this, "Erro ao salvar transacao. Tente novamente mais tarde.", Toast.LENGTH_LONG).show()
+            }
+            else -> {}
+        }
+    }
+
+    private fun processResponseListarConta(response: Response?){
+        when(response?.status){
+            Response.Status.LOADING -> {
+                viewModel.loading.set(true)
+            }
+            Response.Status.SUCCESS -> {
+                viewModel.loading.set(false)
+
+                viewModel.listarContasLiveData.removeObserver(observerListarConta)
+                viewModel.listarContasLiveData.value = Response.loading()
+
+                if(response.data is List<*>){
+                    val list = (response.data as List<*>).map{ (it as Conta).nome }
+
+                    val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, list)
+                    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    binding.spinnerConta.adapter = spinnerAdapter
+                    binding.spinnerConta.setSelection(list.indexOf(transacao!!.conta))
+                    if(transacao != null) binding.spinnerConta.setSelection(list.indexOf(transacao!!.conta))
+                }
+            }
+            Response.Status.ERROR -> {
+                viewModel.loading.set(false)
+                Toast.makeText(this, "Erro ao carregar contas.", Toast.LENGTH_LONG).show()
+                this.finish()
             }
             else -> {}
         }

@@ -1,14 +1,21 @@
 package com.carrati.mybills.ui.home
 
+import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.carrati.data.api.FirebaseAPI
+import com.carrati.domain.models.Conta
+import com.carrati.domain.models.Response
 import com.carrati.domain.models.Usuario
 import com.carrati.mybills.R
 import com.carrati.mybills.databinding.FragmentHomeBinding
@@ -19,7 +26,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
@@ -30,16 +36,27 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
 
     private val viewModel: HomeViewModel by viewModel()
     private lateinit var binding: FragmentHomeBinding
+    private val adapter = ContasAdapter(listOf())
+
     private lateinit var calendario: MaterialCalendarView
-    private lateinit var googleSignInClient: GoogleSignInClient
-    private lateinit var usuario: Usuario
     private lateinit var materialAlertDialogBuilder: MaterialAlertDialogBuilder
+    private lateinit var googleSignInClient: GoogleSignInClient
+
+    private lateinit var usuario: Usuario
+    private var selectedPeriod: String? = null
+    private var itensCarregados: Int = 0
+
+    private var observerUsuario = Observer<Usuario> { processResponseUsuario(it) }
+    private var observerCriarConta = Observer<Response> { processResponseCriarConta(it) }
+    private var observerListarConta = Observer<Response> { processResponseListarConta(it) }
+    private var observerBalanco = Observer<Response> { processResponseBalanco(it) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
 
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
+        binding.rvList.adapter = adapter
         binding.lifecycleOwner = viewLifecycleOwner
         binding.executePendingBindings()
         (requireActivity() as ISupportActionBar).getAB()?.elevation = 0F
@@ -57,40 +74,170 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
 
+        configCalendario()
         viewModel.getUsuario()
-        viewModel.usuarioLiveData?.observe(viewLifecycleOwner) {
-            this.usuario = it
-            (requireActivity() as ISupportActionBar).getAB()?.title = "Olá, ${usuario.name}"
-        }
+        viewModel.usuarioLiveData?.observe(viewLifecycleOwner, observerUsuario)
 
         materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
         binding.btCriarConta.setOnClickListener {
-            val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_nova_conta, null, false)
-            launchCustomAlertDialog(view)
+            launchCustomAlertDialog()
         }
     }
 
-    private fun launchCustomAlertDialog(customAlertDialogView: View) {
+    override fun onResume() {
+        super.onResume()
+        if(this::usuario.isInitialized){
+            itensCarregados = 0
+            viewModel.listarContasLiveData.observe(viewLifecycleOwner, observerListarConta)
+            viewModel.carregarContas(usuario.uid!!)
+
+            viewModel.balancoLiveData.observe(viewLifecycleOwner, observerBalanco)
+            viewModel.carregarBalanco(usuario.uid!!, selectedPeriod!!)
+        }
+    }
+
+    private fun configCalendario() {
+        val month = String.format("%02d", calendario.currentDate.month)
+        selectedPeriod = "${calendario.currentDate.year}-$month"
+
+        calendario.setOnMonthChangedListener { _, date ->
+
+            val monthNew = String.format("%02d", date.month)
+            selectedPeriod = "${date.year}-$monthNew"
+
+            viewModel.balancoLiveData.observe(viewLifecycleOwner, observerBalanco)
+            viewModel.carregarBalanco(usuario.uid!!, selectedPeriod!!)
+        }
+    }
+
+    private fun processResponseUsuario(usuario: Usuario){
+        this.usuario = usuario
+        (requireActivity() as ISupportActionBar).getAB()?.title = "Olá, ${usuario.name}"
+        viewModel.usuarioLiveData?.removeObserver(observerUsuario)
+
+        viewModel.listarContasLiveData.observe(viewLifecycleOwner, observerListarConta)
+        viewModel.carregarContas(usuario.uid!!)
+
+        viewModel.balancoLiveData.observe(viewLifecycleOwner, observerBalanco)
+        viewModel.carregarBalanco(usuario.uid!!, selectedPeriod!!)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun processResponseBalanco(response: Response?){
+        when(response?.status){
+            Response.Status.LOADING -> {
+                viewModel.loading.set(true)
+            }
+            Response.Status.SUCCESS -> {
+                itensCarregados++
+                if (itensCarregados >= 2) viewModel.loading.set(false)
+
+                viewModel.balancoLiveData.removeObserver(observerBalanco)
+                viewModel.balancoLiveData.value = Response.loading()
+
+                if (response.data is HashMap<*, *>) {
+                    val despesas = (response.data as HashMap<String, Double>)["despesas"]
+                    val receitas = (response.data as HashMap<String, Double>)["receitas"]
+
+                    binding.tvDespesas.text = String.format("R$%.2f", despesas)
+                    binding.tvReceitas.text = String.format("R$%.2f", receitas)
+                }
+            }
+            Response.Status.ERROR -> {
+                viewModel.loading.set(false)
+                viewModel.isError.set(true)
+            }
+            else -> {}
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun processResponseListarConta(response: Response?){
+        when(response?.status){
+            Response.Status.LOADING -> {
+                viewModel.loading.set(true)
+            }
+            Response.Status.SUCCESS -> {
+                itensCarregados++
+                if (itensCarregados >= 2) viewModel.loading.set(false)
+
+                viewModel.listarContasLiveData.removeObserver(observerListarConta)
+                viewModel.listarContasLiveData.value = Response.loading()
+
+                var saldoTotal = 0.0
+                if (response.data is List<*>) {
+                    val list = (response.data as List<*>).map {
+                        it as Conta
+                        saldoTotal += it.saldo ?: 0.0
+                        it
+                    }
+                    binding.tvSaldo.text = String.format("R$%.2f", saldoTotal)
+
+                    adapter.updateItens(list)
+                }
+            }
+            Response.Status.ERROR -> {
+                viewModel.loading.set(false)
+                viewModel.isError.set(true)
+            }
+            else -> {}
+        }
+    }
+
+    private fun processResponseCriarConta(response: Response?){
+        when(response?.status){
+            Response.Status.LOADING -> {
+                viewModel.loading.set(true)
+            }
+            Response.Status.SUCCESS -> {
+                viewModel.criarContaLiveData.removeObserver(observerCriarConta)
+                viewModel.loading.set(false)
+                Toast.makeText(requireContext(), "Conta salva.", Toast.LENGTH_LONG).show()
+
+                viewModel.listarContasLiveData.observe(viewLifecycleOwner, observerListarConta)
+                viewModel.carregarContas(usuario.uid!!)
+            }
+            Response.Status.ERROR -> {
+                viewModel.loading.set(false)
+                Toast.makeText(requireContext(),
+                    "Erro ao salvar conta. Tente novamente mais tarde.",
+                    Toast.LENGTH_LONG).show()
+            }
+            else -> {}
+        }
+    }
+
+    private fun launchCustomAlertDialog() {
+        val customAlertDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_nova_conta,
+            null,
+            false)
         val nameTextField = customAlertDialogView.findViewById<TextInputLayout>(R.id.tv_nome_conta)
         val saldoTextField = customAlertDialogView.findViewById<TextInputLayout>(R.id.tv_saldo_inicial)
 
         // Building the Alert dialog using materialAlertDialogBuilder instance
         materialAlertDialogBuilder.setView(customAlertDialogView)
-            .setTitle("Details")
-            .setMessage("Enter your basic details")
-            .setPositiveButton("Add") { dialog, _ ->
-                val name = nameTextField.editText?.text.toString()
-                val saldo = saldoTextField.editText?.text.toString()
-                
+            .setTitle("Adicionar Conta")
+            .setMessage("Preencha os dados da conta:")
+            .setPositiveButton("OK") { dialog, _ ->
+                val novaConta = Conta().apply {
+                    nome = nameTextField.editText?.text.toString()
+                    var doubleValue = 0.0
+                    try {
+                        doubleValue = java.lang.Double.parseDouble(saldoTextField.editText?.text.toString())
+                    } catch (e: NumberFormatException) { }
+                    saldo = doubleValue
+                }
+
+                viewModel.criarContaLiveData.observe(viewLifecycleOwner, observerCriarConta)
+                viewModel.criarConta(usuario.uid!!, novaConta)
+
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                Toast.makeText(requireContext(), "Operation cancelled!", Toast.LENGTH_LONG).show()
+            .setNegativeButton("Cancelar") { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
     }
-
 
     override fun onStart() {
         super.onStart()

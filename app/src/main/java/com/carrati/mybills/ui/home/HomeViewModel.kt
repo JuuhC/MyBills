@@ -29,7 +29,7 @@ class HomeViewModel(
 
     var usuarioLiveData: LiveData<Usuario>? = null
     var balancoLiveData = MutableLiveData<Response>()
-    var listaContasLiveData = MutableLiveData<Response>()
+    var listarContasLiveData = MutableLiveData<Response>()
     val criarContaLiveData = MutableLiveData<Response>()
 
     val loading = ObservableField<Boolean>(false)
@@ -44,15 +44,15 @@ class HomeViewModel(
     }
 
     fun carregarContas(uid: String){
-        listaContasLiveData.postValue(Response.loading())
+        listarContasLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val list = listarContasUC.execute(uid)
-                listaContasLiveData.postValue(Response.success(list))
+                listarContasLiveData.postValue(Response.success(list))
             } catch (e: Exception) {
                 Log.e("exception listar conta", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
-                listaContasLiveData.postValue(Response.error(e))
+                listarContasLiveData.postValue(Response.error(e))
             }
         }
     }

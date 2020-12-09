@@ -2,9 +2,10 @@ package com.carrati.domain.models
 
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
+import java.io.Serializable
 
 @IgnoreExtraProperties
-class Transacao {
+class Transacao: Serializable {
     @Exclude var id: String? = null
     var tipo: String? = null
     var data: String? = null

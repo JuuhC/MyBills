@@ -35,10 +35,9 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name_text_field"
+        app:layout_constraintTop_toBottomOf="@id/tv_nome_conta"
         android:hint="Saldo Inicial"
-        app:prefixText="R$"
-        app:prefixTextColor="@color/light_gray"
+        app:prefixText="R$ "
         android:textColorHint="@color/light_gray"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 

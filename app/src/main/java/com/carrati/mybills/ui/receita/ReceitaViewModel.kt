@@ -9,6 +9,7 @@ import com.carrati.data.api.FirebaseAPI
 import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
+import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarReceitaDespesaUC
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
 import kotlinx.coroutines.CoroutineScope
@@ -18,11 +19,13 @@ import java.lang.Exception
 
 class ReceitaViewModel(
     private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
-    private val cadastrarReceitaDespesaUC: CadastrarReceitaDespesaUC
+    private val cadastrarReceitaDespesaUC: CadastrarReceitaDespesaUC,
+    private val listarContasUC: ListarContasUC
 ): ViewModel() {
 
     var usuarioLiveData: LiveData<Usuario>? = null
     var receitaLiveData = MutableLiveData<Response>()
+    var listarContasLiveData = MutableLiveData<Response>()
 
     val loading = ObservableField<Boolean>(false)
 
@@ -36,6 +39,20 @@ class ReceitaViewModel(
                 Log.e("exception save receita", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
                 receitaLiveData.postValue(Response.error(e))
+            }
+        }
+    }
+
+    fun carregarContas(uid: String){
+        listarContasLiveData.postValue(Response.loading())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val list = listarContasUC.execute(uid)
+                listarContasLiveData.postValue(Response.success(list))
+            } catch (e: Exception) {
+                Log.e("exception listar conta", e.toString())
+                FirebaseAPI().sendThrowableToFirebase(e)
+                listarContasLiveData.postValue(Response.error(e))
             }
         }
     }

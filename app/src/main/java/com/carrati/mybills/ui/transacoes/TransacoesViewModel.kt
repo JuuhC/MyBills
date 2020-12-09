@@ -10,6 +10,7 @@ import com.carrati.data.api.FirebaseAPI
 import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
+import com.carrati.domain.usecases.transacoes.DeletarTransacaoUC
 import com.carrati.domain.usecases.transacoes.ListarTransacoesUC
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
 import kotlinx.coroutines.CoroutineScope
@@ -19,25 +20,41 @@ import java.lang.Exception
 
 class TransacoesViewModel(
     private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
-    private val listarTransacoesUC: ListarTransacoesUC
+    private val listarTransacoesUC: ListarTransacoesUC,
+    private val deletarTransacaoUC: DeletarTransacaoUC
 ) : ViewModel() {
 
     var usuarioLiveData: LiveData<Usuario>? = null
     var transacoesLiveData = MutableLiveData<Response>()
+    var deletarLiveData = MutableLiveData<Response>()
 
     val loading = ObservableField<Boolean>(false)
     var isError = ObservableField<Boolean>(false)
 
-    fun getTransacoes(uid: String, periodo: String, filter: String?) {
+    fun getTransacoes(uid: String, periodo: String) {
         transacoesLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val list = listarTransacoesUC.execute(uid, periodo, filter)
+                val list = listarTransacoesUC.execute(uid, periodo)
                 transacoesLiveData.postValue(Response.success(list))
             } catch (e: Exception) {
                 Log.e("exception transacoes", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
                 transacoesLiveData.postValue(Response.error(e))
+            }
+        }
+    }
+
+    fun deletarTransacao(uid: String, periodo: String, position: Int, transacao: Transacao) {
+        deletarLiveData.postValue(Response.loading())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                deletarTransacaoUC.execute(uid, periodo, transacao)
+                deletarLiveData.postValue(Response.success(position))
+            } catch (e: Exception) {
+                Log.e("exception transacoes", e.toString())
+                FirebaseAPI().sendThrowableToFirebase(e)
+                deletarLiveData.postValue(Response.error(e))
             }
         }
     }

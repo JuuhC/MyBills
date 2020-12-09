@@ -8,7 +8,6 @@ class ListarTransacoesUC(private val repo: ITransacoesRepository) {
 
     suspend fun execute(
         uid: String,
-        period: String,
-        filter: String?
-    ): List<Transacao> = repo.getTransacoes(uid,period,filter)
+        period: String
+    ): List<Transacao> = repo.getTransacoes(uid,period)
 }

@@ -9,6 +9,7 @@ import com.carrati.data.api.FirebaseAPI
 import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
+import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarTransferenciaUC
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
 import kotlinx.coroutines.CoroutineScope
@@ -18,11 +19,13 @@ import java.lang.Exception
 
 class TransferenciaViewModel(
     private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
-    private val cadastrarTransferenciaUC: CadastrarTransferenciaUC
+    private val cadastrarTransferenciaUC: CadastrarTransferenciaUC,
+    private val listarContasUC: ListarContasUC
 ): ViewModel() {
 
     var usuarioLiveData: LiveData<Usuario>? = null
     var transferenciaLiveData = MutableLiveData<Response>()
+    var listarContasLiveData = MutableLiveData<Response>()
 
     val loading = ObservableField<Boolean>(false)
 
@@ -36,6 +39,20 @@ class TransferenciaViewModel(
                 Log.e("exception save transferencia", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
                 transferenciaLiveData.postValue(Response.error(e))
+            }
+        }
+    }
+
+    fun carregarContas(uid: String){
+        listarContasLiveData.postValue(Response.loading())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val list = listarContasUC.execute(uid)
+                listarContasLiveData.postValue(Response.success(list))
+            } catch (e: Exception) {
+                Log.e("exception listar conta", e.toString())
+                FirebaseAPI().sendThrowableToFirebase(e)
+                listarContasLiveData.postValue(Response.error(e))
             }
         }
     }

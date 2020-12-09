@@ -16,12 +16,14 @@
         <include layout="@layout/progressbar_carregamento"
             android:id="@+id/ll_loading"
             app:layout_constraintTop_toTopOf="parent"
+            android:elevation="1dp"
             isVisible="@{viewModel.loading}" />
 
         <include
             layout="@layout/layout_error_with_refresh"
             android:id="@+id/ll_erro"
             app:layout_constraintTop_toTopOf="parent"
+            android:elevation="1dp"
             isVisible="@{viewModel.isError &amp;&amp; !viewModel.loading}" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -33,6 +35,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            isVisible="@{!viewModel.isError() &amp;&amp; !viewModel.loading"/>
+            isVisible="@{!viewModel.isError &amp;&amp; !viewModel.loading}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
