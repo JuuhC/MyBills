@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">MyBills</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_transacoes">Transações</string>
+    <string name="receita">Receita</string>
+    <string name="despesa">Despesa</string>
+    <string name="transferencia">Transferência</string>
+    <string name="sair">Sair</string>
 </resources>

@@ -1,6 +1,10 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -9,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.carrati.mybills"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0.0"
@@ -36,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_plugin"
     implementation project(path: ':domain')
     implementation project(path: ':data')
 
@@ -46,10 +51,23 @@ dependencies {
     implementation "androidx.cardview:cardview:$cardview"
     implementation "androidx.recyclerview:recyclerview:$recycleview"
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipe_refesh"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigation"
+    implementation "androidx.paging:paging-runtime-ktx:$paging"
 
-    // OpenSource Components
-    implementation 'com.bitvale:lavafab:1.0.1'
+    // External Components
+    implementation "com.daimajia.androidanimations:library:2.4@aar"
+    implementation 'com.github.prolificinteractive:material-calendarview:2.0.1'
+
+    // Firebase
+    implementation platform("com.google.firebase:firebase-bom:$firebase_bom")
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-core'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation "com.google.android.gms:play-services-auth:$google_auth"
 
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_lifecycle"
@@ -60,9 +78,11 @@ dependencies {
     // Kotlin Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
 
     // Koin
     implementation "org.koin:koin-android:$koin"
     implementation "org.koin:koin-androidx-scope:$koin"
     implementation "org.koin:koin-androidx-viewmodel:$koin"
 }
+apply plugin: 'com.google.gms.google-services'
