@@ -31,7 +31,6 @@
             android:layout_weight="5"
             android:text="Nome"
             android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/item_valor"
             app:layout_constraintStart_toEndOf="@id/item_simbolo"
             app:layout_constraintTop_toTopOf="parent" />
@@ -67,7 +66,6 @@
             android:gravity="end"
             android:text="R$ 0,00"
             android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/item_efetuado"
             app:layout_constraintTop_toTopOf="parent" />
 
