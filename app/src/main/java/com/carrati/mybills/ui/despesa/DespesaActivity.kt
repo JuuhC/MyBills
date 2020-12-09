@@ -80,7 +80,7 @@ class DespesaActivity: AppCompatActivity() {
             this.tipo = "despesa"
             this.data = binding.edtData.text.toString()
             this.nome = binding.edtDescr.text.toString()
-            this.conta = "itau"//binding.spinnerConta.selectedItem.toString()
+            this.conta = binding.spinnerConta.selectedItem.toString()
             var doubleValue = 0.0
             try {
                 doubleValue = java.lang.Double.parseDouble(binding.edtValor.text.toString().replace(",", "."))
