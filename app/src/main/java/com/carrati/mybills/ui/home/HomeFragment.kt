@@ -1,7 +1,6 @@
 package com.carrati.mybills.ui.home
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -11,8 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.carrati.data.api.FirebaseAPI
 import com.carrati.domain.models.Conta
 import com.carrati.domain.models.Response
@@ -51,7 +48,11 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
     private var observerListarConta = Observer<Response> { processResponseListarConta(it) }
     private var observerBalanco = Observer<Response> { processResponseBalanco(it) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
 
         binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -199,44 +200,57 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
             }
             Response.Status.ERROR -> {
                 viewModel.loading.set(false)
-                Toast.makeText(requireContext(),
+                Toast.makeText(
+                    requireContext(),
                     "Erro ao salvar conta. Tente novamente mais tarde.",
-                    Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG
+                ).show()
             }
             else -> {}
         }
     }
 
     private fun launchCustomAlertDialog() {
-        val customAlertDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_nova_conta,
+        val customAlertDialogView = LayoutInflater.from(requireContext()).inflate(
+            R.layout.dialog_nova_conta,
             null,
-            false)
+            false
+        )
         val nameTextField = customAlertDialogView.findViewById<TextInputLayout>(R.id.tv_nome_conta)
         val saldoTextField = customAlertDialogView.findViewById<TextInputLayout>(R.id.tv_saldo_inicial)
 
         // Building the Alert dialog using materialAlertDialogBuilder instance
-        materialAlertDialogBuilder.setView(customAlertDialogView)
+        val dialog = materialAlertDialogBuilder.setView(customAlertDialogView)
             .setTitle("Adicionar Conta")
             .setMessage("Preencha os dados da conta:")
-            .setPositiveButton("OK") { dialog, _ ->
-                val novaConta = Conta().apply {
-                    nome = nameTextField.editText?.text.toString()
-                    var doubleValue = 0.0
-                    try {
-                        doubleValue = java.lang.Double.parseDouble(saldoTextField.editText?.text.toString())
-                    } catch (e: NumberFormatException) { }
-                    saldo = doubleValue
-                }
-
-                viewModel.criarContaLiveData.observe(viewLifecycleOwner, observerCriarConta)
-                viewModel.criarConta(usuario.uid!!, novaConta)
-
-                dialog.dismiss()
-            }
+            .setPositiveButton("OK") { _, _ -> }
             .setNegativeButton("Cancelar") { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                if (nameTextField.editText?.text.isNullOrEmpty()) {
+                    nameTextField.isErrorEnabled = true
+                    nameTextField.error = "Adicione um nome"
+                } else {
+                    val novaConta = Conta().apply {
+                        nome = nameTextField.editText?.text.toString()
+                        var doubleValue = 0.0
+                        try {
+                            doubleValue =
+                                java.lang.Double.parseDouble(saldoTextField.editText?.text.toString())
+                        } catch (e: NumberFormatException) {
+                        }
+                        saldo = doubleValue
+                    }
+
+                    viewModel.criarContaLiveData.observe(viewLifecycleOwner, observerCriarConta)
+                    viewModel.criarConta(usuario.uid!!, novaConta)
+
+                    dialog.dismiss()
+                }
+            }
     }
 
     override fun onStart() {

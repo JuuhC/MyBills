@@ -16,6 +16,12 @@
         app:layout_constraintTop_toTopOf="parent"
         android:hint="Nome da Conta"
         android:textColorHint="@color/light_gray"
+        app:helperText="*Obrigatório"
+        app:helperTextEnabled="true"
+        app:helperTextTextColor="@color/light_gray"
+        app:helperTextTextAppearance="@style/HelperTextAppearance"
+        app:errorEnabled="true"
+        app:errorTextAppearance="@style/ErrorTextAppearance"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
