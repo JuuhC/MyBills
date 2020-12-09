@@ -21,7 +21,6 @@
 
             <include
                 android:id="@+id/ll_loading"
-                isVisible="@{viewModel.loading}"
                 layout="@layout/progressbar_carregamento"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -29,14 +28,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                isVisible="@{viewModel.loading}"
                 android:visibility="gone"/>
 
             <include
-                android:visibility="gone"
-                layout="@layout/layout_error_with_refresh"
                 android:id="@+id/ll_erro"
+                layout="@layout/layout_error_with_refresh"
                 app:layout_constraintTop_toTopOf="parent"
-                isVisible="@{viewModel.isError &amp;&amp; !viewModel.loading}" />
+                isVisible="@{viewModel.isError &amp;&amp; !viewModel.loading}"
+                android:visibility="gone"
+                />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_saldos"
@@ -131,6 +132,7 @@
                 />
 
             <ImageView
+                android:id="@+id/bt_criar_conta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"

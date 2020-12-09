@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "650050044427-7vqqiu51m8o1quc38ggo5bi8j0uvlv23.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carrati.mybills",
+            "certificate_hash": "6b259ac5510b1e65d05cbe5209992f3cabbc369e"
+          }
+        },
+        {
           "client_id": "650050044427-8j7p1m2oe23kv7ih2hh0pbhvhbm12na8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

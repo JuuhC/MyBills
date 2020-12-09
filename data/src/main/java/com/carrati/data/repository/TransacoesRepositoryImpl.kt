@@ -8,7 +8,7 @@ import com.google.firebase.firestore.Query
 
 import kotlinx.coroutines.tasks.await
 
-class TransacoesRepositoryImpl(api: FirebaseAPI): ITransacoesRepository {
+class TransacoesRepositoryImpl(private val api: FirebaseAPI): ITransacoesRepository {
 
     //criar receita
 
@@ -20,7 +20,7 @@ class TransacoesRepositoryImpl(api: FirebaseAPI): ITransacoesRepository {
 
     //listar transacoes
     override suspend fun getTransacoes(uid: String, periodo: String, filter: String?): List<Transacao> {
-        val transacoesRef = FirebaseAPI().getFirebaseDb()
+        val transacoesRef = api.getFirebaseDb()
             .collection("users")
             .document(uid)
             .collection("periodos")
@@ -50,7 +50,7 @@ class TransacoesRepositoryImpl(api: FirebaseAPI): ITransacoesRepository {
     }
 
     override suspend fun cadastrarReceitaDespesa(uid: String, periodo: String, transacao: Transacao){
-        FirebaseAPI().getFirebaseDb()
+        api.getFirebaseDb()
             .collection("users")
             .document(uid)
             .collection("periodos")
@@ -60,9 +60,11 @@ class TransacoesRepositoryImpl(api: FirebaseAPI): ITransacoesRepository {
     }
 
     override suspend fun atualizarSaldo(uid: String, periodo: String, transacao: Transacao ){
-        FirebaseAPI().getFirebaseDb()
+        api.getFirebaseDb()
             .collection("users")
             .document(uid)
+            .collection("transacoes")
+            .document(periodo)
             .update(transacao.tipo+"s", FieldValue.increment(transacao.valor!!)).await()
 
         val saldoConta = if (transacao.tipo == "receita") {
@@ -70,11 +72,25 @@ class TransacoesRepositoryImpl(api: FirebaseAPI): ITransacoesRepository {
         } else {
             FieldValue.increment(transacao.valor!!.unaryMinus())
         }
-        FirebaseAPI().getFirebaseDb()
+        api.getFirebaseDb()
             .collection("users")
             .document(uid)
             .collection("contas")
             .document(transacao.conta!!)
             .update("saldo", saldoConta).await()
+    }
+
+    override suspend fun obterBalancoMensal(uid: String, periodo: String): HashMap<String, Double?>{
+        val result = api.getFirebaseDb()
+            .collection("users")
+            .document(uid)
+            .collection("transacoes")
+            .document(periodo)
+            .get().await()
+
+        return hashMapOf(
+            "receitas" to result.getDouble("receitas"),
+            "despesas" to result.getDouble("despesas")
+        )
     }
 }
