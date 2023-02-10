@@ -13,17 +13,17 @@ import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarReceitaDespesaUC
 import com.carrati.domain.usecases.transacoes.EditarTransacaoUC
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
+import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class DespesaViewModel(
     private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
     private val cadastrarReceitaDespesaUC: CadastrarReceitaDespesaUC,
     private val listarContasUC: ListarContasUC,
     private val editarTransacaoUC: EditarTransacaoUC
-): ViewModel() {
+) : ViewModel() {
 
     var usuarioLiveData: LiveData<Usuario>? = null
     var despesaLiveData = MutableLiveData<Response>()
@@ -45,7 +45,7 @@ class DespesaViewModel(
         }
     }
 
-    fun carregarContas(uid: String){
+    fun carregarContas(uid: String) {
         listarContasLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -59,7 +59,12 @@ class DespesaViewModel(
         }
     }
 
-    fun editarTransacao(uid: String, periodo: String, transacao: Transacao, transacaoAntiga: Transacao? = null){
+    fun editarTransacao(
+        uid: String,
+        periodo: String,
+        transacao: Transacao,
+        transacaoAntiga: Transacao? = null
+    ) {
         despesaLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -73,7 +78,7 @@ class DespesaViewModel(
         }
     }
 
-    fun getUsuario(){
+    fun getUsuario() {
         usuarioLiveData = obterUsuarioFirestoreUC.execute()
     }
 }

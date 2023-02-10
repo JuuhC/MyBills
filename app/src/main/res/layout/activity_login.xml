@@ -21,7 +21,7 @@
             android:background="@color/white"
             android:orientation="vertical"
             android:elevation="1dp"
-            >
+            tools:visibility="gone">
 
             <ImageView
                 android:id="@+id/img_logo"
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mapeie seus gastos\ne comece a economizar!"
-            android:textAlignment="center"
+            android:gravity="center"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/guideline2"

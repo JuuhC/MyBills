@@ -26,7 +26,7 @@ class LoginViewModel(
         authenticatedUserLiveData = signInWithGoogleUC.execute(googleAuthCredential)
     }
 
-    fun createUserFirestore(user: Usuario){
+    fun createUserFirestore(user: Usuario) {
         createdUserLiveData = criarUsuarioFirestoreUC.execute(user)
     }
 }

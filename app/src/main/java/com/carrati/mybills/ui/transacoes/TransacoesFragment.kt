@@ -1,6 +1,5 @@
 package com.carrati.mybills.ui.transacoes
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat.getColor
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
@@ -28,7 +28,6 @@ import com.carrati.mybills.ui.receita.ReceitaActivity
 import com.carrati.mybills.utils.MarginItemDecoration
 import com.carrati.mybills.utils.OneAnyParameterClickListener
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TransacoesFragment : Fragment() {
@@ -45,12 +44,18 @@ class TransacoesFragment : Fragment() {
     private val observerTransacoes = Observer<Response> { processResponseTransacoes(it) }
     private val observerDeletar = Observer<Response> { processReponseDeletar(it) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FragmentTransacoesBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.executePendingBindings()
-        binding.llErro.setOnClickListener { viewModel.getTransacoes(usuario.uid!!, selectedPeriod!!) }
+        binding.llErro.root.setOnClickListener {
+            viewModel.getTransacoes(usuario.uid!!, selectedPeriod!!)
+        }
 
         binding.rvList.addItemDecoration(MarginItemDecoration(24))
 
@@ -73,7 +78,7 @@ class TransacoesFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if(this::usuario.isInitialized){
+        if (this::usuario.isInitialized) {
             viewModel.getTransacoes(usuario.uid!!, selectedPeriod!!)
             viewModel.transacoesLiveData.observe(viewLifecycleOwner, observerTransacoes)
         }
@@ -94,13 +99,20 @@ class TransacoesFragment : Fragment() {
 
     private fun deleteTransaction() {
         val itemTouch = object : ItemTouchHelper.Callback() {
-            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
                 val dragFlags: Int = ItemTouchHelper.ACTION_STATE_IDLE
                 val swipeFlags: Int = ItemTouchHelper.START
                 return makeMovementFlags(dragFlags, swipeFlags)
             }
 
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
                 return false
             }
 
@@ -108,8 +120,12 @@ class TransacoesFragment : Fragment() {
                 val position: Int = viewHolder.absoluteAdapterPosition
                 val transacao = adapter.itens[position]
 
-                if(transacao.nome!!.contains("Transferencia", true)){
-                    Toast.makeText(requireContext(), "Não é possivel excluir transferencia.", Toast.LENGTH_LONG).show()
+                if (transacao.nome!!.contains("Transferencia", true)) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Não é possivel excluir transferencia.",
+                        Toast.LENGTH_LONG
+                    ).show()
                     adapter.notifyDataSetChanged()
                 } else {
                     AlertDialog.Builder(requireContext())
@@ -130,7 +146,7 @@ class TransacoesFragment : Fragment() {
         ItemTouchHelper(itemTouch).attachToRecyclerView(binding.rvList)
     }
 
-    private fun processResponseUsuario(usuario: Usuario){
+    private fun processResponseUsuario(usuario: Usuario) {
         this.usuario = usuario
         viewModel.usuarioLiveData?.removeObserver(observerUsuario)
 
@@ -138,38 +154,47 @@ class TransacoesFragment : Fragment() {
         viewModel.transacoesLiveData.observe(viewLifecycleOwner, observerTransacoes)
     }
 
-    private fun processResponseTransacoes(response: Response?){
-        when(response?.status){
+    private fun processResponseTransacoes(response: Response?) {
+        when (response?.status) {
             Response.Status.LOADING -> {
-                viewModel.isError.set(false)
-                viewModel.loading.set(true)
+                binding.llErro.root.isVisible = false
+                binding.llLoading.isVisible = true
+                binding.rvList.isVisible = false
             }
             Response.Status.SUCCESS -> {
-                viewModel.loading.set(false)
+                binding.llLoading.isVisible = false
+                binding.rvList.isVisible = true
                 viewModel.transacoesLiveData.removeObserver(observerTransacoes)
                 viewModel.transacoesLiveData.value = Response.loading()
 
-                if(response.data is List<*>) {
-                    adapter = TransacoesAdapter(response.data as List<Transacao>, editarDespesaListener, editarReceitaListener)
+                if (response.data is List<*>) {
+                    adapter = TransacoesAdapter(
+                        response.data as List<Transacao>,
+                        editarDespesaListener,
+                        editarReceitaListener
+                    )
                     binding.rvList.adapter = adapter
                 }
             }
             Response.Status.ERROR -> {
-                viewModel.loading.set(false)
-                viewModel.isError.set(true)
+                binding.llErro.root.isVisible = true
+                binding.llLoading.isVisible = false
+                binding.rvList.isVisible = false
             }
             else -> {}
         }
     }
 
-    private fun processReponseDeletar(response: Response?){
-        when(response?.status){
+    private fun processReponseDeletar(response: Response?) {
+        when (response?.status) {
             Response.Status.LOADING -> {
-                viewModel.isError.set(false)
-                viewModel.loading.set(true)
+                binding.llErro.root.isVisible = false
+                binding.llLoading.isVisible = true
+                binding.rvList.isVisible = false
             }
             Response.Status.SUCCESS -> {
-                viewModel.loading.set(false)
+                binding.llLoading.isVisible = false
+                binding.rvList.isVisible = true
                 viewModel.deletarLiveData.removeObserver(observerDeletar)
                 viewModel.deletarLiveData.value = Response.loading()
 
@@ -177,14 +202,15 @@ class TransacoesFragment : Fragment() {
             }
             Response.Status.ERROR -> {
                 Log.e("erro delete", response.error.toString())
-                viewModel.loading.set(false)
-                viewModel.isError.set(true)
+                binding.llErro.root.isVisible = true
+                binding.llLoading.isVisible = false
+                binding.rvList.isVisible = false
             }
             else -> {}
         }
     }
 
-    private val editarDespesaListener = object: OneAnyParameterClickListener {
+    private val editarDespesaListener = object : OneAnyParameterClickListener {
         override fun onClick(arg: Any) {
             val intent = Intent(requireActivity(), DespesaActivity::class.java)
             intent.putExtra("transacao", arg as Transacao)
@@ -192,7 +218,7 @@ class TransacoesFragment : Fragment() {
         }
     }
 
-    private val editarReceitaListener = object: OneAnyParameterClickListener {
+    private val editarReceitaListener = object : OneAnyParameterClickListener {
         override fun onClick(arg: Any) {
             val intent = Intent(requireActivity(), ReceitaActivity::class.java)
             intent.putExtra("transacao", arg as Transacao)
@@ -209,7 +235,9 @@ class TransacoesFragment : Fragment() {
 
             val searchPlate = searchView.findViewById(androidx.appcompat.R.id.search_src_text) as EditText
             searchPlate.hint = "Pesquisar transação por nome"
-            val searchPlateView: View = searchView.findViewById(androidx.appcompat.R.id.search_plate)
+            val searchPlateView: View = searchView.findViewById(
+                androidx.appcompat.R.id.search_plate
+            )
             searchPlateView.setBackgroundColor(
                 getColor(
                     requireContext(),
@@ -223,7 +251,9 @@ class TransacoesFragment : Fragment() {
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    if(this@TransacoesFragment::adapter.isInitialized) adapter.filtrarTransacoes(newText ?: "")
+                    if (this@TransacoesFragment::adapter.isInitialized) adapter.filtrarTransacoes(
+                        newText ?: ""
+                    )
                     return false
                 }
             })
@@ -234,10 +264,9 @@ class TransacoesFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-
             R.id.action_search -> {
                 item.expandActionView()
-                item.actionView.requestFocus()
+                item.actionView!!.requestFocus()
             }
             else -> NavigationUI.onNavDestinationSelected(item, requireView().findNavController()) || super.onOptionsItemSelected(
                 item

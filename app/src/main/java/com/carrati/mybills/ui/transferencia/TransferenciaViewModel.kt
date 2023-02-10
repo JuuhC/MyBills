@@ -12,22 +12,22 @@ import com.carrati.domain.models.Usuario
 import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarTransferenciaUC
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
+import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class TransferenciaViewModel(
     private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
     private val cadastrarTransferenciaUC: CadastrarTransferenciaUC,
     private val listarContasUC: ListarContasUC
-): ViewModel() {
+) : ViewModel() {
 
     var usuarioLiveData: LiveData<Usuario>? = null
     var transferenciaLiveData = MutableLiveData<Response>()
     var listarContasLiveData = MutableLiveData<Response>()
 
-    val loading = ObservableField<Boolean>(false)
+    val loading = ObservableField(false)
 
     fun salvarTransacao(uid: String, periodo: String, transacao1: Transacao, transacao2: Transacao) {
         transferenciaLiveData.postValue(Response.loading())
@@ -43,7 +43,7 @@ class TransferenciaViewModel(
         }
     }
 
-    fun carregarContas(uid: String){
+    fun carregarContas(uid: String) {
         listarContasLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -57,7 +57,7 @@ class TransferenciaViewModel(
         }
     }
 
-    fun getUsuario(){
+    fun getUsuario() {
         usuarioLiveData = obterUsuarioFirestoreUC.execute()
     }
 }

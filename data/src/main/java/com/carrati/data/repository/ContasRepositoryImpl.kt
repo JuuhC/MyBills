@@ -7,11 +7,11 @@ import com.carrati.domain.repository.IContasRepository
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 
-class ContasRepositoryImpl(api: FirebaseAPI): IContasRepository {
+class ContasRepositoryImpl(private val api: FirebaseAPI): IContasRepository {
 
     //criar conta
     override suspend fun criarConta(uid: String, conta: Conta) {
-        FirebaseAPI().getFirebaseDb()
+        api.getFirebaseDb()
             .collection("users")
             .document(uid)
             .collection("contas")

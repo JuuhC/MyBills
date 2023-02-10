@@ -3,9 +3,15 @@ package com.carrati.mybills.ui.home
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
@@ -27,7 +33,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
 
@@ -52,7 +57,7 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
         binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -87,7 +92,7 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
 
     override fun onResume() {
         super.onResume()
-        if(this::usuario.isInitialized){
+        if (this::usuario.isInitialized) {
             itensCarregados = 0
             viewModel.listarContasLiveData.observe(viewLifecycleOwner, observerListarConta)
             viewModel.carregarContas(usuario.uid!!)
@@ -111,7 +116,7 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
         }
     }
 
-    private fun processResponseUsuario(usuario: Usuario){
+    private fun processResponseUsuario(usuario: Usuario) {
         this.usuario = usuario
         (requireActivity() as ISupportActionBar).getAB()?.title = "Olá, ${usuario.name}"
         viewModel.usuarioLiveData?.removeObserver(observerUsuario)
@@ -124,14 +129,15 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun processResponseBalanco(response: Response?){
-        when(response?.status){
+    private fun processResponseBalanco(response: Response?) {
+        when (response?.status) {
             Response.Status.LOADING -> {
-                viewModel.loading.set(true)
+                binding.llErro.root.isVisible = false
+                binding.llLoading.isVisible = true
             }
             Response.Status.SUCCESS -> {
                 itensCarregados++
-                if (itensCarregados >= 2) viewModel.loading.set(false)
+                if (itensCarregados >= 2) binding.llLoading.isVisible = false
 
                 viewModel.balancoLiveData.removeObserver(observerBalanco)
                 viewModel.balancoLiveData.value = Response.loading()
@@ -145,22 +151,23 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
                 }
             }
             Response.Status.ERROR -> {
-                viewModel.loading.set(false)
-                viewModel.isError.set(true)
+                binding.llErro.root.isVisible = true
+                binding.llLoading.isVisible = false
             }
             else -> {}
         }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun processResponseListarConta(response: Response?){
-        when(response?.status){
+    private fun processResponseListarConta(response: Response?) {
+        when (response?.status) {
             Response.Status.LOADING -> {
-                viewModel.loading.set(true)
+                binding.llErro.root.isVisible = false
+                binding.llLoading.isVisible = true
             }
             Response.Status.SUCCESS -> {
                 itensCarregados++
-                if (itensCarregados >= 2) viewModel.loading.set(false)
+                if (itensCarregados >= 2) binding.llLoading.isVisible = false
 
                 viewModel.listarContasLiveData.removeObserver(observerListarConta)
                 viewModel.listarContasLiveData.value = Response.loading()
@@ -178,28 +185,30 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
                 }
             }
             Response.Status.ERROR -> {
-                viewModel.loading.set(false)
-                viewModel.isError.set(true)
+                binding.llErro.root.isVisible = false
+                binding.llLoading.isVisible = true
             }
             else -> {}
         }
     }
 
-    private fun processResponseCriarConta(response: Response?){
-        when(response?.status){
+    private fun processResponseCriarConta(response: Response?) {
+        when (response?.status) {
             Response.Status.LOADING -> {
-                viewModel.loading.set(true)
+                binding.llErro.root.isVisible = true
+                binding.llLoading.isVisible = false
             }
             Response.Status.SUCCESS -> {
                 viewModel.criarContaLiveData.removeObserver(observerCriarConta)
-                viewModel.loading.set(false)
+                binding.llLoading.isVisible = true
                 Toast.makeText(requireContext(), "Conta salva.", Toast.LENGTH_LONG).show()
 
                 viewModel.listarContasLiveData.observe(viewLifecycleOwner, observerListarConta)
                 viewModel.carregarContas(usuario.uid!!)
             }
             Response.Status.ERROR -> {
-                viewModel.loading.set(false)
+                binding.llErro.root.isVisible = false
+                binding.llLoading.isVisible = true
                 Toast.makeText(
                     requireContext(),
                     "Erro ao salvar conta. Tente novamente mais tarde.",
@@ -217,7 +226,9 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
             false
         )
         val nameTextField = customAlertDialogView.findViewById<TextInputLayout>(R.id.tv_nome_conta)
-        val saldoTextField = customAlertDialogView.findViewById<TextInputLayout>(R.id.tv_saldo_inicial)
+        val saldoTextField = customAlertDialogView.findViewById<TextInputLayout>(
+            R.id.tv_saldo_inicial
+        )
 
         // Building the Alert dialog using materialAlertDialogBuilder instance
         val dialog = materialAlertDialogBuilder.setView(customAlertDialogView)
@@ -230,27 +241,28 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
             .show()
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                if (nameTextField.editText?.text.isNullOrEmpty()) {
-                    nameTextField.isErrorEnabled = true
-                    nameTextField.error = "Adicione um nome"
-                } else {
-                    val novaConta = Conta().apply {
-                        nome = nameTextField.editText?.text.toString()
-                        var doubleValue = 0.0
-                        try {
-                            doubleValue =
-                                java.lang.Double.parseDouble(saldoTextField.editText?.text.toString())
-                        } catch (e: NumberFormatException) {
-                        }
-                        saldo = doubleValue
-                    }
-
-                    viewModel.criarContaLiveData.observe(viewLifecycleOwner, observerCriarConta)
-                    viewModel.criarConta(usuario.uid!!, novaConta)
-
-                    dialog.dismiss()
+            if (nameTextField.editText?.text.isNullOrEmpty()) {
+                nameTextField.isErrorEnabled = true
+                nameTextField.error = "Adicione um nome"
+            } else {
+                val novaConta = Conta().apply {
+                    nome = nameTextField.editText?.text.toString()
+                    var doubleValue = 0.0
+                    try {
+                        doubleValue =
+                            java.lang.Double.parseDouble(
+                                saldoTextField.editText?.text.toString()
+                            )
+                    } catch (_: NumberFormatException) { }
+                    saldo = doubleValue
                 }
+
+                viewModel.criarContaLiveData.observe(viewLifecycleOwner, observerCriarConta)
+                viewModel.criarConta(usuario.uid!!, novaConta)
+
+                dialog.dismiss()
             }
+        }
     }
 
     override fun onStart() {
@@ -264,7 +276,7 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
     }
 
     override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
-        if(firebaseAuth.currentUser == null){
+        if (firebaseAuth.currentUser == null) {
             val intent = Intent(requireActivity(), LoginActivity::class.java)
             startActivity(intent)
             requireActivity().finish()
@@ -283,9 +295,10 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
                 googleSignInClient.signOut()
                 true
             }
-            else -> NavigationUI.onNavDestinationSelected(item, requireView().findNavController()) || super.onOptionsItemSelected(
-                item
-            )
+            else -> NavigationUI.onNavDestinationSelected(item, requireView().findNavController()) ||
+                super.onOptionsItemSelected(
+                    item
+                )
         }
     }
 }

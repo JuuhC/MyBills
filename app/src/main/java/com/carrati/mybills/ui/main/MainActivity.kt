@@ -8,7 +8,6 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -21,7 +20,6 @@ import com.carrati.mybills.ui.receita.ReceitaActivity
 import com.carrati.mybills.ui.transferencia.TransferenciaActivity
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
-
 
 class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
 
@@ -47,8 +45,8 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
         binding.navView.setupWithNavController(navController)
 
         contractFab()
-        binding.fab.setOnClickListener{
-            if(!fabExpanded) {
+        binding.fab.setOnClickListener {
+            if (!fabExpanded) {
                 expandFab()
             } else {
                 contractFab()
@@ -62,12 +60,12 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private fun expandFab(){
+    private fun expandFab() {
         rotateFab(binding.fab, true)
 
-        if(animatorReceita != null && animatorReceita!!.isRunning) animatorReceita?.stop(true)
-        if(animatorDespesa != null && animatorDespesa!!.isRunning) animatorDespesa?.stop(true)
-        if(animatorTransferencia != null && animatorTransferencia!!.isRunning) animatorTransferencia?.stop(
+        if (animatorReceita != null && animatorReceita!!.isRunning) animatorReceita?.stop(true)
+        if (animatorDespesa != null && animatorDespesa!!.isRunning) animatorDespesa?.stop(true)
+        if (animatorTransferencia != null && animatorTransferencia!!.isRunning) animatorTransferencia?.stop(
             true
         )
 
@@ -87,12 +85,12 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
         binding.clFabMenu.setBackgroundColor(ContextCompat.getColor(this, R.color.black_translucid))
     }
 
-    private fun contractFab(){
+    private fun contractFab() {
         rotateFab(binding.fab, false)
 
-        if(animatorReceita != null && animatorReceita!!.isRunning) animatorReceita?.stop(true)
-        if(animatorDespesa != null && animatorDespesa!!.isRunning) animatorDespesa?.stop(true)
-        if(animatorTransferencia != null && animatorTransferencia!!.isRunning) animatorTransferencia?.stop(
+        if (animatorReceita != null && animatorReceita!!.isRunning) animatorReceita?.stop(true)
+        if (animatorDespesa != null && animatorDespesa!!.isRunning) animatorDespesa?.stop(true)
+        if (animatorTransferencia != null && animatorTransferencia!!.isRunning) animatorTransferencia?.stop(
             true
         )
 
@@ -124,7 +122,7 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
         return rotate
     }
 
-    private fun configureSubFabs(){
+    private fun configureSubFabs() {
         binding.fabDespesa.setOnClickListener {
             val intent = Intent(this, DespesaActivity::class.java)
             startActivity(intent)

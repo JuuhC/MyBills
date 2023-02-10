@@ -13,23 +13,23 @@ import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarReceitaDespesaUC
 import com.carrati.domain.usecases.transacoes.EditarTransacaoUC
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
+import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class ReceitaViewModel(
     private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
     private val cadastrarReceitaDespesaUC: CadastrarReceitaDespesaUC,
     private val listarContasUC: ListarContasUC,
     private val editarTransacaoUC: EditarTransacaoUC
-): ViewModel() {
+) : ViewModel() {
 
     var usuarioLiveData: LiveData<Usuario>? = null
     var receitaLiveData = MutableLiveData<Response>()
     var listarContasLiveData = MutableLiveData<Response>()
 
-    val loading = ObservableField<Boolean>(false)
+    val loading = ObservableField(false)
 
     fun salvarTransacao(uid: String, periodo: String, transacao: Transacao) {
         receitaLiveData.postValue(Response.loading())
@@ -45,7 +45,7 @@ class ReceitaViewModel(
         }
     }
 
-    fun carregarContas(uid: String){
+    fun carregarContas(uid: String) {
         listarContasLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -59,7 +59,12 @@ class ReceitaViewModel(
         }
     }
 
-    fun editarTransacao(uid: String, periodo: String, transacao: Transacao, transacaoAntiga: Transacao? = null){
+    fun editarTransacao(
+        uid: String,
+        periodo: String,
+        transacao: Transacao,
+        transacaoAntiga: Transacao? = null
+    ) {
         receitaLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -73,7 +78,7 @@ class ReceitaViewModel(
         }
     }
 
-    fun getUsuario(){
+    fun getUsuario() {
         usuarioLiveData = obterUsuarioFirestoreUC.execute()
     }
 }

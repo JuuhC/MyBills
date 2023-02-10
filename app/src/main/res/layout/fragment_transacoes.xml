@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View" />
         <variable
             name="viewModel"
             type="com.carrati.mybills.ui.transacoes.TransacoesViewModel"/>
@@ -13,18 +14,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/progressbar_carregamento"
+        <ProgressBar
             android:id="@+id/ll_loading"
-            app:layout_constraintTop_toTopOf="parent"
+            style="?android:progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:elevation="1dp"
-            isVisible="@{viewModel.loading}" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <include
             layout="@layout/layout_error_with_refresh"
             android:id="@+id/ll_erro"
-            app:layout_constraintTop_toTopOf="parent"
             android:elevation="1dp"
-            isVisible="@{viewModel.isError &amp;&amp; !viewModel.loading}" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_list"
@@ -35,6 +41,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            isVisible="@{!viewModel.isError &amp;&amp; !viewModel.loading}"/>
+            tools:listitem="@layout/item_despesa"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

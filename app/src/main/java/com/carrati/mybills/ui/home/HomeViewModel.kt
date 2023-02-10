@@ -14,10 +14,10 @@ import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.ObterBalancoMensalUC
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
 import com.carrati.domain.usecases.usuarios.SignOutFirebaseUC
+import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class HomeViewModel(
     private val signOutFirebaseUC: SignOutFirebaseUC,
@@ -32,18 +32,15 @@ class HomeViewModel(
     var listarContasLiveData = MutableLiveData<Response>()
     val criarContaLiveData = MutableLiveData<Response>()
 
-    val loading = ObservableField<Boolean>(false)
-    var isError = ObservableField<Boolean>(false)
-
     fun signOutFirebase() {
         signOutFirebaseUC.execute()
     }
 
-    fun getUsuario(){
+    fun getUsuario() {
         usuarioLiveData = obterUsuarioFirestoreUC.execute()
     }
 
-    fun carregarContas(uid: String){
+    fun carregarContas(uid: String) {
         listarContasLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -57,7 +54,7 @@ class HomeViewModel(
         }
     }
 
-    fun carregarBalanco(uid: String, periodo: String){
+    fun carregarBalanco(uid: String, periodo: String) {
         balancoLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -71,7 +68,7 @@ class HomeViewModel(
         }
     }
 
-    fun criarConta(uid: String, conta: Conta){
+    fun criarConta(uid: String, conta: Conta) {
         criarContaLiveData.postValue(Response.loading())
         CoroutineScope(Dispatchers.IO).launch {
             try {

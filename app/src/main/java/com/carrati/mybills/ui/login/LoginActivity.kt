@@ -2,7 +2,6 @@ package com.carrati.mybills.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -18,7 +17,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LoginActivity: AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: LoginViewModel by viewModel()
@@ -62,15 +61,11 @@ class LoginActivity: AppCompatActivity() {
 
         binding.clLoading.isVisible = true
         if (requestCode == RC_SIGN_IN) {
-            Log.e("chegou aqui", "0")
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val googleSignInAccount = task.getResult(ApiException::class.java)!!
-                Log.e("chegou aqui", "1")
                 googleSignInAccount.let {
-                    Log.e("chegou aqui", "2")
                     val googleTokenId = googleSignInAccount.idToken
-                    Log.e("chegou aqui", "3")
                     val googleAuthCredential = GoogleAuthProvider.getCredential(googleTokenId, null)
 
                     viewModel.signInWithGoogle(googleAuthCredential)
@@ -79,7 +74,6 @@ class LoginActivity: AppCompatActivity() {
                     }
                 }
             } catch (e: ApiException) {
-                Log.e("Error", e.toString())
                 Toast.makeText(this, "Erro ao fazer login", Toast.LENGTH_LONG).show()
                 binding.clLoading.isVisible = false
             }
@@ -87,7 +81,6 @@ class LoginActivity: AppCompatActivity() {
     }
 
     private fun obterUserFirestore(user: Usuario) {
-
         viewModel.createUserFirestore(user)
         viewModel.createdUserLiveData?.observe(this) { createdUser ->
             val intent = Intent(this, MainActivity::class.java)
