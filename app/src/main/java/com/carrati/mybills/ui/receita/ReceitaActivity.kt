@@ -3,6 +3,7 @@ package com.carrati.mybills.ui.receita
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.Filter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -81,7 +82,7 @@ class ReceitaActivity : AppCompatActivity() {
             this.tipo = "receita"
             this.data = binding.edtData.text.toString()
             this.nome = binding.edtDescr.text.toString()
-            this.conta = binding.spinnerConta.selectedItem.toString()
+            this.conta = binding.spinner.text.toString()
             var doubleValue = 0.0
             try {
                 doubleValue = java.lang.Double.parseDouble(
@@ -137,16 +138,32 @@ class ReceitaActivity : AppCompatActivity() {
                 if (response.data is List<*>) {
                     val list = (response.data as List<*>).map { (it as Conta).nome }
 
-                    val spinnerAdapter = ArrayAdapter(
+                    val spinnerAdapter = object : ArrayAdapter<String>(
                         this,
                         android.R.layout.simple_spinner_item,
                         list
-                    )
+                    ) {
+                        private val filter_that_does_nothing = object : Filter() {
+                            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                                val results = FilterResults()
+                                results.values = list
+                                results.count = list.size
+                                return results
+                            }
+                            override fun publishResults(constraint: CharSequence?,results: FilterResults?) {
+                                notifyDataSetChanged()
+                            }
+                        }
+
+                        override fun getFilter(): Filter {
+                            return filter_that_does_nothing
+                        }
+                    }
                     spinnerAdapter.setDropDownViewResource(
                         android.R.layout.simple_spinner_dropdown_item
                     )
-                    binding.spinnerConta.adapter = spinnerAdapter
-                    if (transacao != null) binding.spinnerConta.setSelection(
+                    binding.spinner.setAdapter(spinnerAdapter)
+                    if (transacao != null) binding.spinner.setSelection(
                         list.indexOf(transacao!!.conta)
                     )
                 }

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
+import android.widget.Filter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -52,9 +53,9 @@ class TransferenciaActivity : AppCompatActivity() {
             return
         } else binding.tvDataLayout.isErrorEnabled = false
 
-        if (binding.spinnerConta1.selectedItem.toString() == binding.spinnerConta2.selectedItem.toString()) {
-            binding.tvConta2.setTextAppearance(R.style.ErrorTextAppearance)
-            binding.tvConta2.text = "Não é possivel transferir para mesma conta"
+        if (binding.spinner1.text.toString() == binding.spinner2.text.toString()) {
+            binding.spinner2.setTextAppearance(R.style.ErrorTextAppearance)
+            binding.spinner2.error = "Não é possivel transferir para mesma conta"
             return
         }
 
@@ -66,8 +67,8 @@ class TransferenciaActivity : AppCompatActivity() {
         val transacao1 = Transacao().apply {
             this.tipo = "despesa"
             this.data = binding.edtData.text.toString()
-            this.nome = "Transferencia para ${binding.spinnerConta2.selectedItem}"
-            this.conta = binding.spinnerConta1.selectedItem.toString()
+            this.nome = "Transferencia para ${binding.spinner2.text}"
+            this.conta = binding.spinner1.text.toString()
             var doubleValue = 0.0
             try {
                 doubleValue = java.lang.Double.parseDouble(binding.edtValor.text.toString())
@@ -79,8 +80,8 @@ class TransferenciaActivity : AppCompatActivity() {
         val transacao2 = Transacao().apply {
             this.tipo = "receita"
             this.data = binding.edtData.text.toString()
-            this.nome = "Transferencia de ${binding.spinnerConta1.selectedItem}"
-            this.conta = binding.spinnerConta2.selectedItem.toString()
+            this.nome = "Transferencia de ${binding.spinner1.text}"
+            this.conta = binding.spinner2.text.toString()
             var doubleValue = 0.0
             try {
                 doubleValue = java.lang.Double.parseDouble(binding.edtValor.text.toString())
@@ -130,16 +131,32 @@ class TransferenciaActivity : AppCompatActivity() {
                 if (response.data is List<*>) {
                     val list = (response.data as List<*>).map { (it as Conta).nome }
 
-                    val spinnerAdapter = ArrayAdapter(
+                    val spinnerAdapter = object : ArrayAdapter<String>(
                         this,
                         android.R.layout.simple_spinner_item,
                         list
-                    )
+                    ) {
+                        private val filter_that_does_nothing = object : Filter() {
+                            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                                val results = FilterResults()
+                                results.values = list
+                                results.count = list.size
+                                return results
+                            }
+                            override fun publishResults(constraint: CharSequence?,results: FilterResults?) {
+                                notifyDataSetChanged()
+                            }
+                        }
+
+                        override fun getFilter(): Filter {
+                            return filter_that_does_nothing
+                        }
+                    }
                     spinnerAdapter.setDropDownViewResource(
                         android.R.layout.simple_spinner_dropdown_item
                     )
-                    binding.spinnerConta1.adapter = spinnerAdapter
-                    binding.spinnerConta2.adapter = spinnerAdapter
+                    binding.spinner1.setAdapter(spinnerAdapter)
+                    binding.spinner2.setAdapter(spinnerAdapter)
                 }
             }
             Response.Status.ERROR -> {
