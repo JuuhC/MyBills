@@ -20,8 +20,8 @@ import com.carrati.data.api.FirebaseAPI
 import com.carrati.domain.models.Conta
 import com.carrati.domain.models.Response
 import com.carrati.domain.models.Usuario
-import com.carrati.mybills.R
-import com.carrati.mybills.databinding.FragmentHomeBinding
+import com.carrati.mybills.app.R
+import com.carrati.mybills.app.databinding.FragmentHomeBinding
 import com.carrati.mybills.ui.login.LoginActivity
 import com.carrati.mybills.ui.main.IBinding
 import com.carrati.mybills.ui.main.ISupportActionBar

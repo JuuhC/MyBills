@@ -13,8 +13,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.carrati.mybills.R
-import com.carrati.mybills.databinding.ActivityMainBinding
+import com.carrati.mybills.app.R
+import com.carrati.mybills.app.databinding.ActivityMainBinding
 import com.carrati.mybills.ui.despesa.DespesaActivity
 import com.carrati.mybills.ui.receita.ReceitaActivity
 import com.carrati.mybills.ui.transferencia.TransferenciaActivity

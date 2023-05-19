@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.carrati.domain.models.Conta
-import com.carrati.mybills.databinding.ItemContaBinding
+import com.carrati.mybills.app.databinding.ItemContaBinding
 
 class ContasAdapter(
     private var list: List<Conta>

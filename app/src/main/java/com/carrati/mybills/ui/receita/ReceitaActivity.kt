@@ -11,8 +11,8 @@ import com.carrati.domain.models.Conta
 import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
-import com.carrati.mybills.R
-import com.carrati.mybills.databinding.ActivityReceitaBinding
+import com.carrati.mybills.app.R
+import com.carrati.mybills.app.databinding.ActivityReceitaBinding
 import java.time.LocalDate
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

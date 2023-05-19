@@ -2,7 +2,7 @@
 buildscript {
     ext{
         build_gradle = "7.3.0"
-        kotlin_plugin = "1.7.10"
+        kotlin_plugin = "1.8.10"
         androidx_core = "1.9.0"
         androidx_appcompat = "1.6.0"
         androidx_lifecycle = "2.5.1"

@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
-import com.carrati.mybills.R
-import com.carrati.mybills.databinding.FragmentTransacoesBinding
+import com.carrati.mybills.app.R
+import com.carrati.mybills.app.databinding.FragmentTransacoesBinding
 import com.carrati.mybills.ui.despesa.DespesaActivity
 import com.carrati.mybills.ui.main.IBinding
 import com.carrati.mybills.ui.main.ISupportActionBar

@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.carrati.domain.models.Transacao
-import com.carrati.mybills.databinding.ItemDespesaBinding
-import com.carrati.mybills.databinding.ItemReceitaBinding
+import com.carrati.mybills.app.databinding.ItemDespesaBinding
+import com.carrati.mybills.app.databinding.ItemReceitaBinding
 import com.carrati.mybills.utils.OneAnyParameterClickListener
 
 class TransacoesAdapter(

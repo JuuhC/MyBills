@@ -8,6 +8,7 @@ plugins {
 
 android {
     compileSdk 33
+    namespace 'com.carrati.mybills.app'
 
     defaultConfig {
         applicationId "com.carrati.mybills"
@@ -21,9 +22,28 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        release {
+            ext.enableCrashlytics = false
+            ext.alwaysUpdateBuildId = false
+
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.3'
     }
     buildFeatures {
         viewBinding = true

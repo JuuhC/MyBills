@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.carrati.domain.models.Usuario
-import com.carrati.mybills.R
-import com.carrati.mybills.databinding.ActivityLoginBinding
+import com.carrati.mybills.app.R
+import com.carrati.mybills.app.databinding.ActivityLoginBinding
 import com.carrati.mybills.ui.main.MainActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
