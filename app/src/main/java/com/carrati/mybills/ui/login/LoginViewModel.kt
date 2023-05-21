@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.login
+package com.carrati.mybills.app.ui.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel

@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.transacoes
+package com.carrati.mybills.app.ui.transacoes
 
 import android.util.Log
 import androidx.lifecycle.LiveData

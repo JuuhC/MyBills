@@ -8,7 +8,7 @@
         <import type="android.view.View" />
         <variable
             name="viewModel"
-            type="com.carrati.mybills.ui.receita.ReceitaViewModel"/>
+            type="com.carrati.mybills.app.ui.receita.ReceitaViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

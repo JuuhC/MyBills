@@ -7,7 +7,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.carrati.mybills.ui.login.LoginViewModel"/>
+            type="com.carrati.mybills.app.ui.login.LoginViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

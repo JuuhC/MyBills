@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.transacoes
+package com.carrati.mybills.app.ui.transacoes
 
 import android.content.Intent
 import android.os.Bundle
@@ -21,12 +21,12 @@ import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.Usuario
 import com.carrati.mybills.app.R
 import com.carrati.mybills.app.databinding.FragmentTransacoesBinding
-import com.carrati.mybills.ui.despesa.DespesaActivity
-import com.carrati.mybills.ui.main.IBinding
-import com.carrati.mybills.ui.main.ISupportActionBar
-import com.carrati.mybills.ui.receita.ReceitaActivity
-import com.carrati.mybills.utils.MarginItemDecoration
-import com.carrati.mybills.utils.OneAnyParameterClickListener
+import com.carrati.mybills.app.ui.despesa.DespesaActivity
+import com.carrati.mybills.app.ui.main.IBinding
+import com.carrati.mybills.app.ui.main.ISupportActionBar
+import com.carrati.mybills.app.ui.receita.ReceitaActivity
+import com.carrati.mybills.app.utils.MarginItemDecoration
+import com.carrati.mybills.app.utils.OneAnyParameterClickListener
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

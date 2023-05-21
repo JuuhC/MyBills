@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.carrati.mybills.ui.home.HomeFragment"
+        android:name="com.carrati.mybills.app.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_transacoes"
-        android:name="com.carrati.mybills.ui.transacoes.TransacoesFragment"
+        android:name="com.carrati.mybills.app.ui.transacoes.TransacoesFragment"
         android:label="@string/title_transacoes"
         tools:layout="@layout/fragment_transacoes" />
 </navigation>

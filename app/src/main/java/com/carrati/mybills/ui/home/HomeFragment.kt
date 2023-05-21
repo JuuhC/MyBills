@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.home
+package com.carrati.mybills.app.ui.home
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -22,9 +22,9 @@ import com.carrati.domain.models.Response
 import com.carrati.domain.models.Usuario
 import com.carrati.mybills.app.R
 import com.carrati.mybills.app.databinding.FragmentHomeBinding
-import com.carrati.mybills.ui.login.LoginActivity
-import com.carrati.mybills.ui.main.IBinding
-import com.carrati.mybills.ui.main.ISupportActionBar
+import com.carrati.mybills.app.ui.login.LoginActivity
+import com.carrati.mybills.app.ui.main.IBinding
+import com.carrati.mybills.app.ui.main.ISupportActionBar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

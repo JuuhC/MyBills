@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.transferencia
+package com.carrati.mybills.app.ui.transferencia
 
 import android.util.Log
 import androidx.databinding.ObservableField

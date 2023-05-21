@@ -1,4 +1,4 @@
-package com.carrati.mybills.utils
+package com.carrati.mybills.app.utils
 
 interface OneAnyParameterClickListener {
 

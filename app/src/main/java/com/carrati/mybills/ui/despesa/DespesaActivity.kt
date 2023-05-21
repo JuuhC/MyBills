@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.despesa
+package com.carrati.mybills.app.ui.despesa
 
 import android.app.DatePickerDialog
 import android.os.Bundle

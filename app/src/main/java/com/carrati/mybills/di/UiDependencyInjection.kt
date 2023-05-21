@@ -1,11 +1,11 @@
-package com.carrati.mybills.di
+package com.carrati.mybills.app.di
 
-import com.carrati.mybills.ui.despesa.DespesaViewModel
-import com.carrati.mybills.ui.home.HomeViewModel
-import com.carrati.mybills.ui.login.LoginViewModel
-import com.carrati.mybills.ui.receita.ReceitaViewModel
-import com.carrati.mybills.ui.transacoes.TransacoesViewModel
-import com.carrati.mybills.ui.transferencia.TransferenciaViewModel
+import com.carrati.mybills.app.ui.despesa.DespesaViewModel
+import com.carrati.mybills.app.ui.home.HomeViewModel
+import com.carrati.mybills.app.ui.login.LoginViewModel
+import com.carrati.mybills.app.ui.receita.ReceitaViewModel
+import com.carrati.mybills.app.ui.transacoes.TransacoesViewModel
+import com.carrati.mybills.app.ui.transferencia.TransferenciaViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

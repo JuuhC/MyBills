@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.main
+package com.carrati.mybills.app.ui.main
 
 import android.animation.AnimatorListenerAdapter
 import android.content.Intent
@@ -8,22 +8,24 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.findNavController
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.carrati.mybills.app.R
 import com.carrati.mybills.app.databinding.ActivityMainBinding
-import com.carrati.mybills.ui.despesa.DespesaActivity
-import com.carrati.mybills.ui.receita.ReceitaActivity
-import com.carrati.mybills.ui.transferencia.TransferenciaActivity
+import com.carrati.mybills.app.ui.despesa.DespesaActivity
+import com.carrati.mybills.app.ui.receita.ReceitaActivity
+import com.carrati.mybills.app.ui.transferencia.TransferenciaActivity
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 
 class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private var animatorReceita: YoYo.YoYoString? = null
     private var animatorDespesa: YoYo.YoYoString? = null
@@ -35,8 +37,12 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.navView.background = null
+        binding.lifecycleOwner = this
+        binding.executePendingBindings()
 
-        val navController = this.findNavController(R.id.nav_host_fragment)
+        setContentView(binding.root)
+
+        navController = (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
 
         appBarConfiguration = AppBarConfiguration(
             setOf(R.id.navigation_home, R.id.navigation_transacoes)
@@ -56,7 +62,6 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
@@ -65,9 +70,11 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
 
         if (animatorReceita != null && animatorReceita!!.isRunning) animatorReceita?.stop(true)
         if (animatorDespesa != null && animatorDespesa!!.isRunning) animatorDespesa?.stop(true)
-        if (animatorTransferencia != null && animatorTransferencia!!.isRunning) animatorTransferencia?.stop(
-            true
-        )
+        if (animatorTransferencia != null && animatorTransferencia!!.isRunning) {
+            animatorTransferencia?.stop(
+                true
+            )
+        }
 
         animatorReceita = YoYo.with(Techniques.ZoomInUp)
             .duration(500)
@@ -90,9 +97,9 @@ class MainActivity : AppCompatActivity(), ISupportActionBar, IBinding {
 
         if (animatorReceita != null && animatorReceita!!.isRunning) animatorReceita?.stop(true)
         if (animatorDespesa != null && animatorDespesa!!.isRunning) animatorDespesa?.stop(true)
-        if (animatorTransferencia != null && animatorTransferencia!!.isRunning) animatorTransferencia?.stop(
-            true
-        )
+        if (animatorTransferencia != null && animatorTransferencia!!.isRunning) {
+            animatorTransferencia?.stop(true)
+        }
 
         animatorReceita = YoYo.with(Techniques.ZoomOutDown)
             .duration(500)

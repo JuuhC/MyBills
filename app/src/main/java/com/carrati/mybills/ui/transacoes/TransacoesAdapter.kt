@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.transacoes
+package com.carrati.mybills.app.ui.transacoes
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.carrati.domain.models.Transacao
 import com.carrati.mybills.app.databinding.ItemDespesaBinding
 import com.carrati.mybills.app.databinding.ItemReceitaBinding
-import com.carrati.mybills.utils.OneAnyParameterClickListener
+import com.carrati.mybills.app.utils.OneAnyParameterClickListener
 
 class TransacoesAdapter(
     var itens: List<Transacao>,

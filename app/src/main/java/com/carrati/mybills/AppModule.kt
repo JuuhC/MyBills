@@ -1,9 +1,9 @@
-package com.carrati.mybills
+package com.carrati.mybills.app
 
 import android.app.Application
 import com.carrati.data.di.dataModule
 import com.carrati.domain.di.domainModule
-import com.carrati.mybills.di.presentationModule
+import com.carrati.mybills.app.di.presentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

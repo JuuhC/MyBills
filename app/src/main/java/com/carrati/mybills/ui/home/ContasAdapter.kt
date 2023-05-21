@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.home
+package com.carrati.mybills.app.ui.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
