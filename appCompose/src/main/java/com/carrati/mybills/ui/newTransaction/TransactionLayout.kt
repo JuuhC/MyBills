@@ -41,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -140,11 +141,10 @@ fun HeaderValue(
             color = Color.Black.copy(alpha = 0.5f)
         )
 
-        val formatter = DecimalFormat("#,##0.00", DecimalFormatSymbols(Locale("pt", "BR")))
         TextField(
             modifier = Modifier
                 .wrapContentWidth(align = Alignment.End),
-            value = formatter.format(viewState.value.amount),
+            value = "R$%.2f".format(viewState.value.amount),
             onValueChange = {
                 viewState.value.amount = it.toFloatOrNull() ?: 0f
             },
