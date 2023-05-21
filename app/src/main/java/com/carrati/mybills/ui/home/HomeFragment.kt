@@ -134,10 +134,21 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
             Response.Status.LOADING -> {
                 binding.llErro.root.isVisible = false
                 binding.llLoading.isVisible = true
+                binding.cardSaldos.isVisible = false
+                binding.cardContas.isVisible = false
+                binding.tvContasLayout.isVisible = false
+                binding.btCriarConta.isVisible = false
             }
             Response.Status.SUCCESS -> {
                 itensCarregados++
-                if (itensCarregados >= 2) binding.llLoading.isVisible = false
+                if (itensCarregados >= 2) {
+                    binding.llErro.root.isVisible = false
+                    binding.llLoading.isVisible = false
+                    binding.cardSaldos.isVisible = true
+                    binding.cardContas.isVisible = true
+                    binding.tvContasLayout.isVisible = true
+                    binding.btCriarConta.isVisible = true
+                }
 
                 viewModel.balancoLiveData.removeObserver(observerBalanco)
                 viewModel.balancoLiveData.value = Response.loading()
@@ -164,10 +175,21 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
             Response.Status.LOADING -> {
                 binding.llErro.root.isVisible = false
                 binding.llLoading.isVisible = true
+                binding.cardSaldos.isVisible = false
+                binding.cardContas.isVisible = false
+                binding.tvContasLayout.isVisible = false
+                binding.btCriarConta.isVisible = false
             }
             Response.Status.SUCCESS -> {
                 itensCarregados++
-                if (itensCarregados >= 2) binding.llLoading.isVisible = false
+                if (itensCarregados >= 2) {
+                    binding.llErro.root.isVisible = false
+                    binding.llLoading.isVisible = false
+                    binding.cardSaldos.isVisible = true
+                    binding.cardContas.isVisible = true
+                    binding.tvContasLayout.isVisible = true
+                    binding.btCriarConta.isVisible = true
+                }
 
                 viewModel.listarContasLiveData.removeObserver(observerListarConta)
                 viewModel.listarContasLiveData.value = Response.loading()
@@ -187,6 +209,9 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
             Response.Status.ERROR -> {
                 binding.llErro.root.isVisible = false
                 binding.llLoading.isVisible = true
+                binding.cardContas.isVisible = false
+                binding.tvContasLayout.isVisible = false
+                binding.btCriarConta.isVisible = false
             }
             else -> {}
         }
@@ -197,6 +222,9 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
             Response.Status.LOADING -> {
                 binding.llErro.root.isVisible = true
                 binding.llLoading.isVisible = false
+                binding.cardContas.isVisible = false
+                binding.tvContasLayout.isVisible = false
+                binding.btCriarConta.isVisible = false
             }
             Response.Status.SUCCESS -> {
                 viewModel.criarContaLiveData.removeObserver(observerCriarConta)

@@ -126,7 +126,7 @@ class TransacoesFragment : Fragment() {
                         "Não é possivel excluir transferencia.",
                         Toast.LENGTH_LONG
                     ).show()
-                    adapter.notifyDataSetChanged()
+                    adapter.notifyItemChanged(position)
                 } else {
                     AlertDialog.Builder(requireContext())
                         .setTitle("Excluir Transação")
@@ -137,7 +137,7 @@ class TransacoesFragment : Fragment() {
                             viewModel.deletarLiveData.observe(viewLifecycleOwner, observerDeletar)
                         }
                         .setNegativeButton("Cancelar") { _, _ ->
-                            adapter.notifyDataSetChanged()
+                            adapter.notifyItemChanged(position)
                         }
                         .create().show()
                 }
@@ -164,6 +164,7 @@ class TransacoesFragment : Fragment() {
             Response.Status.SUCCESS -> {
                 binding.llLoading.isVisible = false
                 binding.rvList.isVisible = true
+                binding.llErro.root.isVisible = false
                 viewModel.transacoesLiveData.removeObserver(observerTransacoes)
                 viewModel.transacoesLiveData.value = Response.loading()
 

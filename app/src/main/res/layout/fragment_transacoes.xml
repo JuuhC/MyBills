@@ -12,7 +12,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/color_background" >
 
         <ProgressBar
             android:id="@+id/ll_loading"
@@ -32,10 +33,17 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="gone" />
 
+        <include
+            layout="@layout/layout_empty_list"
+            android:id="@+id/ll_empty"
+            android:elevation="1dp"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_list"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
