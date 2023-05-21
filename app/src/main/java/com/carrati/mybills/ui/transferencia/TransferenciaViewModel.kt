@@ -5,6 +5,7 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.carrati.data.api.FirebaseAPI
 import com.carrati.domain.models.Response
 import com.carrati.domain.models.Transacao
@@ -31,7 +32,7 @@ class TransferenciaViewModel(
 
     fun salvarTransacao(uid: String, periodo: String, transacao1: Transacao, transacao2: Transacao) {
         transferenciaLiveData.postValue(Response.loading())
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             try {
                 cadastrarTransferenciaUC.execute(uid, periodo, transacao1, transacao2)
                 transferenciaLiveData.postValue(Response.success(true))
@@ -45,12 +46,11 @@ class TransferenciaViewModel(
 
     fun carregarContas(uid: String) {
         listarContasLiveData.postValue(Response.loading())
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             try {
                 val list = listarContasUC.execute(uid)
                 listarContasLiveData.postValue(Response.success(list))
             } catch (e: Exception) {
-                Log.e("exception listar conta", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
                 listarContasLiveData.postValue(Response.error(e))
             }

@@ -3,6 +3,8 @@ package com.carrati.mybills.app.ui.transferencia
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.Toast
@@ -43,21 +45,29 @@ class TransferenciaActivity : AppCompatActivity() {
 
         binding.fabSave.setOnClickListener { saveTransacao() }
         binding.edtData.setOnClickListener { inflateCalendar() }
-        binding.edtData.requestFocus()
+        binding.edtValor.requestFocus()
     }
 
     private fun saveTransacao() {
-        if (binding.edtData.text.toString() == "") {
-            binding.tvDataLayout.isErrorEnabled = true
+        if (binding.edtData.text.toString().isBlank()) {
             binding.tvDataLayout.error = "Selecione uma data"
             return
-        } else binding.tvDataLayout.isErrorEnabled = false
+        } else binding.tvDataLayout.error = null
 
-        if (binding.spinner1.text.toString() == binding.spinner2.text.toString()) {
-            binding.spinner2.setTextAppearance(R.style.ErrorTextAppearance)
-            binding.spinner2.error = "Não é possivel transferir para mesma conta"
+        if (binding.spinnerConta1.text.toString().isBlank()) {
+            binding.spinnerContaLayout1.error = "Campo obrigatório"
             return
-        }
+        } else binding.spinnerContaLayout1.error = null
+
+        if (binding.spinnerConta2.text.toString().isBlank()) {
+            binding.spinnerContaLayout2.error = "Campo obrigatório"
+            return
+        } else binding.spinnerContaLayout2.error = null
+
+        if (binding.spinnerConta1.text.toString() == binding.spinnerConta2.text.toString()) {
+            binding.spinnerContaLayout2.error = "Não é possivel transferir para mesma conta"
+            return
+        } else binding.spinnerContaLayout2.error = null
 
         if (binding.edtValor.text.toString() == "" || binding.edtValor.text.toString() == "0.00") {
             Toast.makeText(this, "Valor não pode ser zero", Toast.LENGTH_LONG).show()
@@ -67,8 +77,8 @@ class TransferenciaActivity : AppCompatActivity() {
         val transacao1 = Transacao().apply {
             this.tipo = "despesa"
             this.data = binding.edtData.text.toString()
-            this.nome = "Transferencia para ${binding.spinner2.text}"
-            this.conta = binding.spinner1.text.toString()
+            this.nome = "Transferencia para ${binding.spinnerConta2.text}"
+            this.conta = binding.spinnerConta1.text.toString()
             var doubleValue = 0.0
             try {
                 doubleValue = java.lang.Double.parseDouble(binding.edtValor.text.toString())
@@ -80,8 +90,8 @@ class TransferenciaActivity : AppCompatActivity() {
         val transacao2 = Transacao().apply {
             this.tipo = "receita"
             this.data = binding.edtData.text.toString()
-            this.nome = "Transferencia de ${binding.spinner1.text}"
-            this.conta = binding.spinner2.text.toString()
+            this.nome = "Transferencia de ${binding.spinnerConta1.text}"
+            this.conta = binding.spinnerConta2.text.toString()
             var doubleValue = 0.0
             try {
                 doubleValue = java.lang.Double.parseDouble(binding.edtValor.text.toString())
@@ -90,8 +100,8 @@ class TransferenciaActivity : AppCompatActivity() {
             this.efetuado = true
         }
 
-        viewModel.salvarTransacao(usuario.uid!!, selectedPeriod!!, transacao1, transacao2)
-        viewModel.transferenciaLiveData.observe(this, observerSalvar)
+        //viewModel.salvarTransacao(usuario.uid!!, selectedPeriod!!, transacao1, transacao2)
+        //viewModel.transferenciaLiveData.observe(this, observerSalvar)
     }
 
     private fun processResponseSave(response: Response?) {
@@ -123,17 +133,18 @@ class TransferenciaActivity : AppCompatActivity() {
             }
             Response.Status.SUCCESS -> {
                 viewModel.loading.set(false)
-                Log.e("listarConta", "entrou")
 
                 viewModel.listarContasLiveData.removeObserver(observerListarConta)
                 viewModel.listarContasLiveData.value = Response.loading()
 
                 if (response.data is List<*>) {
                     val list = (response.data as List<*>).map { (it as Conta).nome }
+                    Log.e("listarConta", "entrou")
+                    Log.e("listarConta", list.toString())
 
                     val spinnerAdapter = object : ArrayAdapter<String>(
                         this,
-                        android.R.layout.simple_spinner_item,
+                        android.R.layout.simple_spinner_dropdown_item,
                         list
                     ) {
                         private val filter_that_does_nothing = object : Filter() {
@@ -143,7 +154,7 @@ class TransferenciaActivity : AppCompatActivity() {
                                 results.count = list.size
                                 return results
                             }
-                            override fun publishResults(constraint: CharSequence?,results: FilterResults?) {
+                            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                                 notifyDataSetChanged()
                             }
                         }
@@ -152,11 +163,9 @@ class TransferenciaActivity : AppCompatActivity() {
                             return filter_that_does_nothing
                         }
                     }
-                    spinnerAdapter.setDropDownViewResource(
-                        android.R.layout.simple_spinner_dropdown_item
-                    )
-                    binding.spinner1.setAdapter(spinnerAdapter)
-                    binding.spinner2.setAdapter(spinnerAdapter)
+
+                    binding.spinnerConta1.setAdapter(spinnerAdapter)
+                    binding.spinnerConta2.setAdapter(spinnerAdapter)
                 }
             }
             Response.Status.ERROR -> {

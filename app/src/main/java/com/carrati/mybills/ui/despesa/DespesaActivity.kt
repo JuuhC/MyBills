@@ -72,6 +72,11 @@ class DespesaActivity : AppCompatActivity() {
             return
         } else binding.tvDescrLayout.isErrorEnabled = false
 
+        if (binding.spinnerConta.text.toString().isBlank()) {
+            binding.spinnerContaLayout.error = "Campo obrigatório"
+            return
+        } else binding.spinnerContaLayout.error = null
+
         if (binding.edtValor.text.toString() == "" || binding.edtValor.text.toString() == "0.00") {
             Toast.makeText(this, "Valor não pode ser zero", Toast.LENGTH_LONG).show()
             return
@@ -81,7 +86,7 @@ class DespesaActivity : AppCompatActivity() {
             this.tipo = "despesa"
             this.data = binding.edtData.text.toString()
             this.nome = binding.edtDescr.text.toString()
-            this.conta = binding.spinner.text.toString()
+            this.conta = binding.spinnerConta.text.toString()
             var doubleValue = 0.0
             try {
                 doubleValue = java.lang.Double.parseDouble(
@@ -139,7 +144,7 @@ class DespesaActivity : AppCompatActivity() {
 
                     val spinnerAdapter = object : ArrayAdapter<String>(
                         this,
-                        android.R.layout.simple_spinner_item,
+                        android.R.layout.simple_spinner_dropdown_item,
                         list
                     ) {
                         private val filter_that_does_nothing = object : Filter() {
@@ -159,12 +164,8 @@ class DespesaActivity : AppCompatActivity() {
                         }
                     }
 
-                    spinnerAdapter.setDropDownViewResource(
-                        android.R.layout.simple_spinner_dropdown_item
-                    )
-
-                    binding.spinner.setAdapter(spinnerAdapter)
-                    if (transacao != null) binding.spinner.setSelection(
+                    binding.spinnerConta.setAdapter(spinnerAdapter)
+                    if (transacao != null) binding.spinnerConta.setSelection(
                         list.indexOf(transacao!!.conta)
                     )
                 }

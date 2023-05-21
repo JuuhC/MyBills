@@ -40,7 +40,7 @@
                 />
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edt_valor"
+                android:id="@+id/edtValor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
@@ -53,12 +53,12 @@
         </LinearLayout>
 
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switch_efetuado"
+            android:id="@+id/switchEfetuado"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="45dp"
             android:layout_marginVertical="24dp"
-            android:text="Pago"
+            android:text="Não pago"
             android:textAlignment="viewStart"
             android:textColor="@color/light_gray"
             android:drawablePadding="19dp"
@@ -77,14 +77,14 @@
             android:layout_marginTop="4dp"
             android:layout_marginHorizontal="32dp"
             android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_data_layout"
+            app:layout_constraintBottom_toTopOf="@+id/tvDataLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switch_efetuado"
+            app:layout_constraintTop_toBottomOf="@+id/switchEfetuado"
             app:layout_constraintVertical_bias="0.16000003"/>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tv_data_layout"
+            android:id="@+id/tvDataLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="32dp"
@@ -95,24 +95,26 @@
             app:errorEnabled="true"
             app:errorTextAppearance="@style/ErrorTextAppearance"
             app:startIconDrawable="@drawable/ic_calendar_gray_24dp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_descr_layout"
+            app:layout_constraintBottom_toTopOf="@+id/tvDescrLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switch_efetuado">
+            app:layout_constraintTop_toBottomOf="@+id/switchEfetuado">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edt_data"
+                android:id="@+id/edtData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="4dp"
                 android:textSize="14sp"
                 android:inputType="none"
                 android:imeOptions="actionNone"
-                android:editable="false" />
+                android:editable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tv_descr_layout"
+            android:id="@+id/tvDescrLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="32dp"
@@ -123,59 +125,53 @@
             app:errorEnabled="true"
             app:errorTextAppearance="@style/ErrorTextAppearance"
             app:startIconDrawable="@drawable/baseline_edit_24"
-            app:layout_constraintBottom_toTopOf="@+id/spinner_conta"
+            app:layout_constraintBottom_toTopOf="@+id/spinnerContaLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_data_layout">
+            app:layout_constraintTop_toBottomOf="@+id/tvDataLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_descr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
                 android:textSize="14sp"
                 android:maxLength="120"
-                android:text="Teste"
+                tools:text="Teste"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/spinner_conta"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:id="@+id/spinnerContaLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="32dp"
             android:textColorHint="@color/light_gray"
+            android:hint="Conta"
             app:boxBackgroundColor="@color/white"
             app:boxBackgroundMode="filled"
             app:errorEnabled="true"
-            android:hint="Conta"
             app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:errorIconDrawable="@null"
             app:startIconDrawable="@drawable/ic_home_black_24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_descr_layout">
+            app:layout_constraintTop_toBottomOf="@+id/tvDescrLayout">
 
             <AutoCompleteTextView
-                android:id="@+id/spinner"
+                android:id="@+id/spinnerConta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
                 android:inputType="none"
                 tools:text="Itau"
-                android:textSize="14sp"
-                android:editable="false" />
+                android:textSize="15sp"
+                android:editable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <!--<Spinner
-            android:id="@+id/spinner_conta"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_descr_layout"
-            />-->
 
         <ProgressBar
             android:layout_width="wrap_content"

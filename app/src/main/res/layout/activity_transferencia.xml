@@ -64,7 +64,7 @@
             app:errorEnabled="true"
             app:errorTextAppearance="@style/ErrorTextAppearance"
             app:startIconDrawable="@drawable/ic_calendar_gray_24dp"
-            app:layout_constraintBottom_toTopOf="@+id/spinner_conta1"
+            app:layout_constraintBottom_toTopOf="@+id/spinnerContaLayout1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
@@ -74,62 +74,73 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="4dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:textSize="14sp"
                 android:inputType="none"
                 android:imeOptions="actionNone"
-                android:editable="false" />
+                android:editable="false"
+                tools:text="2023-05-21"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/spinner_conta1"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:id="@+id/spinnerContaLayout1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="32dp"
+            android:hint="Conta"
             android:textColorHint="@color/light_gray"
             app:boxBackgroundColor="@color/white"
             app:boxBackgroundMode="filled"
             app:errorEnabled="true"
-            android:hint="Conta"
             app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:errorIconDrawable="@null"
             app:startIconDrawable="@drawable/ic_home_black_24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_data_layout">
 
             <AutoCompleteTextView
-                android:id="@+id/spinner1"
+                android:id="@+id/spinnerConta1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
                 android:inputType="none"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 tools:text="Itau"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:editable="false" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/spinner_conta2"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:id="@+id/spinnerContaLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="32dp"
+            android:hint="Conta"
             android:textColorHint="@color/light_gray"
             app:boxBackgroundColor="@color/white"
             app:boxBackgroundMode="filled"
             app:errorEnabled="true"
-            android:hint="Conta"
             app:errorTextAppearance="@style/ErrorTextAppearance"
+            app:errorIconDrawable="@null"
             app:startIconDrawable="@drawable/ic_home_black_24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner_conta1">
+            app:layout_constraintTop_toBottomOf="@+id/spinnerContaLayout1">
 
             <AutoCompleteTextView
-                android:id="@+id/spinner2"
+                android:id="@+id/spinnerConta2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
                 android:inputType="none"
                 tools:text="Itau"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:editable="false" />
 
         </com.google.android.material.textfield.TextInputLayout>

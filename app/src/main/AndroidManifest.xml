@@ -28,15 +28,21 @@
 
         <activity
             android:name=".ui.despesa.DespesaActivity"
-            android:theme="@style/DespesaTheme"/>
+            android:theme="@style/DespesaTheme"
+            android:label="@string/despesa"
+            android:windowSoftInputMode="stateVisible"/>
 
         <activity
             android:name=".ui.receita.ReceitaActivity"
-            android:theme="@style/ReceitaTheme"/>
+            android:theme="@style/ReceitaTheme"
+            android:label="@string/receita"
+            android:windowSoftInputMode="stateVisible"/>
 
         <activity
             android:name=".ui.transferencia.TransferenciaActivity"
-            android:theme="@style/TransferenciaTheme"/>
+            android:theme="@style/TransferenciaTheme"
+            android:label="@string/transferencia"
+            android:windowSoftInputMode="stateVisible"/>
 
     </application>
 

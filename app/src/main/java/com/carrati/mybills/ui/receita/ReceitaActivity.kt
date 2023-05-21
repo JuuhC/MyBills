@@ -62,16 +62,19 @@ class ReceitaActivity : AppCompatActivity() {
 
     private fun saveTransacao() {
         if (binding.edtData.text.toString() == "") {
-            binding.tvDataLayout.isErrorEnabled = true
             binding.tvDataLayout.error = "Selecione uma data"
             return
-        } else binding.tvDataLayout.isErrorEnabled = false
+        } else binding.tvDataLayout.error = null
 
         if (binding.edtDescr.text.toString() == "") {
-            binding.tvDescrLayout.isErrorEnabled = true
             binding.tvDescrLayout.error = "Adicione uma descrição"
             return
-        } else binding.tvDescrLayout.isErrorEnabled = false
+        } else binding.tvDescrLayout.error = null
+
+        if (binding.spinnerConta.text.toString().isBlank()) {
+            binding.spinnerContaLayout.error = "Campo obrigatório"
+            return
+        } else binding.spinnerContaLayout.error = null
 
         if (binding.edtValor.text.toString() == "" || binding.edtValor.text.toString() == "0.00") {
             Toast.makeText(this, "Valor não pode ser zero", Toast.LENGTH_LONG).show()
@@ -82,7 +85,7 @@ class ReceitaActivity : AppCompatActivity() {
             this.tipo = "receita"
             this.data = binding.edtData.text.toString()
             this.nome = binding.edtDescr.text.toString()
-            this.conta = binding.spinner.text.toString()
+            this.conta = binding.spinnerConta.text.toString()
             var doubleValue = 0.0
             try {
                 doubleValue = java.lang.Double.parseDouble(
@@ -140,7 +143,7 @@ class ReceitaActivity : AppCompatActivity() {
 
                     val spinnerAdapter = object : ArrayAdapter<String>(
                         this,
-                        android.R.layout.simple_spinner_item,
+                        android.R.layout.simple_spinner_dropdown_item,
                         list
                     ) {
                         private val filter_that_does_nothing = object : Filter() {
@@ -159,11 +162,8 @@ class ReceitaActivity : AppCompatActivity() {
                             return filter_that_does_nothing
                         }
                     }
-                    spinnerAdapter.setDropDownViewResource(
-                        android.R.layout.simple_spinner_dropdown_item
-                    )
-                    binding.spinner.setAdapter(spinnerAdapter)
-                    if (transacao != null) binding.spinner.setSelection(
+                    binding.spinnerConta.setAdapter(spinnerAdapter)
+                    if (transacao != null) binding.spinnerConta.setSelection(
                         list.indexOf(transacao!!.conta)
                     )
                 }
