@@ -80,7 +80,7 @@ fun HomeScreen(state: HomeViewState, onAddConta: () -> Unit) {
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             modifier = Modifier.padding(start = 16.dp, top = 24.dp, bottom = 16.dp),
-                            color = Color(0xFF776D6D)
+                            color = Color(0xFF8F8181)
                         )
                         TextButton(
                             colors = ButtonDefaults.textButtonColors(
@@ -92,7 +92,7 @@ fun HomeScreen(state: HomeViewState, onAddConta: () -> Unit) {
                             Icon(
                                 imageVector = Icons.Filled.Add,
                                 contentDescription = null,
-                                tint = Color(0xFF33B5E5),
+                                tint = Color(0xF38F8181),
                                 modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
                             )
                         }
