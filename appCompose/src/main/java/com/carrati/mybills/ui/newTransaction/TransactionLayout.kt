@@ -41,15 +41,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.mybills.appCompose.ui.newTransaction.TransactionTypeEnum.EXPENSE
 import com.carrati.mybills.appCompose.ui.newTransaction.TransactionTypeEnum.INCOME
 import com.carrati.mybills.appCompose.ui.newTransaction.TransactionTypeEnum.TRANSFER
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.util.*
 
 @Preview

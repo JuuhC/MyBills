@@ -8,7 +8,7 @@ plugins {
 
 android {
     compileSdk 33
-    namespace 'com.carrati.mybills.appcompose'
+    namespace 'com.carrati.mybills.appCompose'
 
     defaultConfig {
         applicationId "com.carrati.mybills"

@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Conta
-import com.carrati.mybills.ui.main.home.HomeViewState
+import com.carrati.mybills.appCompose.ui.main.home.HomeViewState
 
 @Preview
 @Composable
@@ -154,7 +154,7 @@ fun SaldoCard(
                     )
                     Text(
                         text = "R$%.2f".format(receitas),
-                        color = Color(0xFF118336),
+                        color = Color(0xFF2AA653),
                         fontSize = 17.sp
                     )
                 }
@@ -172,7 +172,7 @@ fun SaldoCard(
                     )
                     Text(
                         text = "R$%.2f".format(despesas),
-                        color = Color(0xFFED4588),
+                        color = Color(0xFFF866A1),
                         fontSize = 17.sp,
                         modifier = Modifier
                             .align(Alignment.End)
