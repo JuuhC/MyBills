@@ -91,7 +91,7 @@ class UsuariosRepositoryImpl(api: FirebaseAPI): IUsuariosRepository {
                 val document = userTask.result
                 if (document!!.exists()) {
                     val user: Usuario? = document.toObject(Usuario::class.java)
-                    userMutableLiveData.postValue(user)
+                    userMutableLiveData.postValue(user!!)
                 }
             } else {
                 Log.e("", userTask.exception?.message.toString())

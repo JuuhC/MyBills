@@ -29,20 +29,29 @@ class HomeViewModel(
     fun loadData(selectedDate: Calendar) {
         state.value = state.value.copy(isLoading = true)
         viewModelScope.launch {
-            val dispatcher = Dispatchers.IO
-            val list = withContext(dispatcher) { listarContasUC.execute(userId) }
-            val balancoMensal = withContext(dispatcher) {
-                val selectedPeriod = "${selectedDate.year}-${selectedDate.month}"
-                obterBalancoMensalUC.execute(userId, selectedPeriod)
+            try {
+                val dispatcher = Dispatchers.IO
+                val list = withContext(dispatcher) { listarContasUC.execute(userId) }
+                val balancoMensal = withContext(dispatcher) {
+                    val selectedPeriod = "${selectedDate.year}-${selectedDate.month}"
+                    obterBalancoMensalUC.execute(userId, selectedPeriod)
+                }
+                state.value = state.value.copy(
+                    isLoading = false,
+                    contas = list,
+                    saldo = list.sumOf { it.saldo ?: 0.0 },
+                    receitas = balancoMensal["receitas"] ?: 0.0,
+                    despesas = balancoMensal["despesas"] ?: 0.0,
+                    selectedDate = selectedDate
+                )
+            } catch (e: Exception) {
+                Log.e("exception carregar tela", e.toString())
+                FirebaseAPI().sendThrowableToFirebase(e)
+                state.value = state.value.copy(
+                    isLoading = false,
+                    errorMessage = "Erro ao carregar dados: $e"
+                )
             }
-            state.value = state.value.copy(
-                isLoading = false,
-                contas = list,
-                saldo = list.sumOf { it.saldo ?: 0.0 },
-                receitas = balancoMensal["receitas"] ?: 0.0,
-                despesas = balancoMensal["despesas"] ?: 0.0,
-                selectedDate = selectedDate
-            )
         }
     }
 
@@ -51,7 +60,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 criarContaUC.execute(userId, Conta(accountName, initialValue))
-                state.value = state.value.copy(isLoading = false, errorMessage = "")
+                loadData(state.value.selectedDate)
             } catch (e: Exception) {
                 Log.e("exception cria conta", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
@@ -61,6 +70,5 @@ class HomeViewModel(
                 )
             }
         }
-        loadData(state.value.selectedDate)
     }
 }

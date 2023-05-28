@@ -27,6 +27,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,18 +43,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Conta
+import com.carrati.mybills.appCompose.ui.main.home.HomeViewModel
 import com.carrati.mybills.appCompose.ui.main.home.HomeViewState
+import java.util.*
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Preview
 @Composable
-private fun Preview() {
+fun HomeScreenPreview() {
     val state by remember { mutableStateOf(HomeViewState()) }
-    state.contas = listOf(Conta("Conta", 10.0), Conta("Conta", 20.0), Conta("Conta", 30.0))
-    HomeScreen(state) { _, _ -> }
+    state.contas = listOf(
+        Conta("Conta", 10.0),
+        Conta("Conta", 20.0),
+        Conta("Conta", 30.0)
+    )
+    HomeLayout(state) { _, _ -> }
 }
 
 @Composable
-fun HomeScreen(state: HomeViewState, onCreateAccount: (String, Double) -> Unit) {
+fun HomeScreen(selectedDate: MutableState<Calendar>, userId: String) {
+    val viewModel: HomeViewModel = koinViewModel { parametersOf(userId) }
+    viewModel.loadData(selectedDate.value)
+    HomeLayout(state = viewModel.state.value) { accountName, initialValue ->
+        viewModel.onAddConta(accountName, initialValue)
+    }
+}
+
+@Composable
+private fun HomeLayout(state: HomeViewState, onCreateAccount: (String, Double) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -125,7 +143,7 @@ fun HomeScreen(state: HomeViewState, onCreateAccount: (String, Double) -> Unit) 
 }
 
 @Composable
-fun SaldoCard(
+private fun SaldoCard(
     saldoTotal: Double,
     receitas: Double,
     despesas: Double,
@@ -202,7 +220,7 @@ fun SaldoCard(
 }
 
 @Composable
-fun CardConta(
+private fun CardConta(
     contas: List<Conta>
 ) {
     Card(
@@ -222,7 +240,6 @@ fun CardConta(
                         .padding(16.dp)
                         .pointerInput(Unit) {
                             detectTapGestures(onPress = {
-
                             })
                         },
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -244,7 +261,7 @@ fun CardConta(
 }
 
 @Composable
-fun CreateAccountDialog(
+private fun CreateAccountDialog(
     onConfirmButton: (String, Double) -> Unit,
     setVisible: (Boolean) -> Unit
 ) {

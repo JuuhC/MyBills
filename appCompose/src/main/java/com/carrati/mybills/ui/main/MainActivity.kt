@@ -16,9 +16,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel = koinViewModel<MainViewModel>()
             MainScreen(
-                viewModel.selectedDate,
-                viewModel.userId
-            ) { type -> navigateToForms(type) }
+                selectedDate = viewModel.selectedDate,
+                searchText = viewModel.searchText,
+                user = viewModel.user,
+                navigateToForms = { type -> navigateToForms(type) },
+                onSignOut = { viewModel.signOutFirebase() }
+            )
         }
     }
 

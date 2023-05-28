@@ -35,6 +35,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
@@ -46,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -61,21 +63,21 @@ import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
 import com.carrati.domain.models.TransactionTypeEnum.INCOME
 import com.carrati.domain.models.TransactionTypeEnum.TRANSFER
+import com.carrati.domain.models.Usuario
 import com.carrati.mybills.appCompose.R.drawable
 import com.carrati.mybills.appCompose.extensions.navigateSingleTopTo
 import com.carrati.mybills.appCompose.extensions.nextMonth
 import com.carrati.mybills.appCompose.extensions.previousMonth
 import com.carrati.mybills.appCompose.extensions.startDay
 import com.carrati.mybills.appCompose.ui.home.HomeScreen
+import com.carrati.mybills.appCompose.ui.home.HomeScreenPreview
 import com.carrati.mybills.appCompose.ui.main.MainDestination.Home
 import com.carrati.mybills.appCompose.ui.main.MainDestination.Transactions
-import com.carrati.mybills.appCompose.ui.main.home.HomeViewModel
 import com.carrati.mybills.appCompose.ui.main.transactions.TransactionsScreen
-import com.carrati.mybills.appCompose.ui.main.transactions.TransactionsViewModel
+import com.carrati.mybills.appCompose.ui.main.transactions.TransactionsScreenPreview
+import com.carrati.mybills.ui.main.transactions.TransactionsScreenTopAppBar
 import java.text.SimpleDateFormat
 import java.util.*
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Preview
 @Composable
@@ -85,14 +87,20 @@ private fun MainScreenPreview() {
             Calendar.getInstance().startDay()
         )
     }
-    MainScreen(selectedDate, "") {}
+    val searchText = remember {
+        mutableStateOf("")
+    }
+    val user = Usuario().apply { name = "Carrati" }
+    MainScreen(selectedDate, searchText, user, {}, {})
 }
 
 @Composable
 fun MainScreen(
     selectedDate: MutableState<Calendar>,
-    userId: String,
-    navigateToForms: (TransactionTypeEnum) -> Unit
+    searchText: MutableState<String>,
+    user: Usuario,
+    navigateToForms: (TransactionTypeEnum) -> Unit,
+    onSignOut: () -> Unit
 ) {
     val navController = rememberNavController()
     val isFabMenuVisible = remember { mutableStateOf(false) }
@@ -105,25 +113,30 @@ fun MainScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        when (currentScreen) {
-                            Home -> {
-                                Text(text = "Olá, userName", color = Color.White)
+                when (currentScreen) {
+                    Home -> {
+                        TopAppBar(
+                            title = {
+                                Text(text = "Olá, ${user.name}", color = Color.White)
+                            },
+                            backgroundColor = Color(0xFF33B5E5),
+                            elevation = 0.dp,
+                            actions = {
+                                IconButton(onClick = { onSignOut() }) {
+                                    Icon(
+                                        modifier = Modifier.scale(0.9f),
+                                        imageVector = Icons.Default.ExitToApp,
+                                        contentDescription = "Logout",
+                                        tint = Color.White
+                                    )
+                                }
                             }
-
-                            Transactions -> {
-                                Text(text = "Transações", color = Color.White)
-                            }
-                        }
-                    },
-                    backgroundColor = Color(0xFF33B5E5),
-                    elevation = 0.dp,
-                    actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                        }
+                        )
                     }
-                )
+                    Transactions -> {
+                        TransactionsScreenTopAppBar(searchText = searchText)
+                    }
+                }
             },
             floatingActionButtonPosition = FabPosition.Center,
             isFloatingActionButtonDocked = true,
@@ -146,19 +159,22 @@ fun MainScreen(
                     cutoutShape = CircleShape,
                     elevation = 2.dp
                 ) {
-                    // val currentBackStack by navController.currentBackStackEntryAsState()
-                    // val currentDestinations = currentBackStack?.destination?.hierarchy
-
                     listOf(Home, Transactions).forEach { item ->
+                        val color = if (item == currentScreen)
+                            Color(0xFF33B5E5)
+                        else
+                            Color.Black.copy(0.4f)
                         BottomNavigationItem(
                             icon = {
-                                Icon(imageVector = item.icon, contentDescription = item.title)
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title,
+                                    tint = color
+                                )
                             },
-                            label = { Text(text = item.title, fontSize = 10.sp) },
-                            selectedContentColor = Color(0xFF33B5E5),
-                            unselectedContentColor = Color.Black.copy(0.4f),
+                            label = { Text(text = item.title, fontSize = 10.sp, color = color) },
                             alwaysShowLabel = true,
-                            selected = item == currentScreen, // currentDestinations?.any { it.route == item.route } == true,
+                            selected = item == currentScreen,
                             onClick = {
                                 navController.navigateSingleTopTo(item.route)
                             }
@@ -173,7 +189,8 @@ fun MainScreen(
                 MainNavHost(
                     navController = navController,
                     selectedDate = selectedDate,
-                    userId = userId,
+                    searchText = searchText,
+                    userId = user.uid ?: "",
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -211,7 +228,7 @@ fun MonthYearNavigationView(
                 text = formatter.format(selectedDate.value.time),
                 color = Color.White,
                 modifier = Modifier.padding(16.dp),
-                fontSize = 16.sp
+                fontSize = 18.sp
             )
         }
         IconButton(
@@ -231,6 +248,7 @@ fun MonthYearNavigationView(
 fun MainNavHost(
     navController: NavHostController,
     selectedDate: MutableState<Calendar>,
+    searchText: MutableState<String>,
     userId: String,
     modifier: Modifier = Modifier
 ) {
@@ -240,16 +258,22 @@ fun MainNavHost(
         modifier = modifier
     ) {
         composable(route = Home.route) {
-            val viewModel: HomeViewModel = koinViewModel { parametersOf(userId) }
-            viewModel.loadData(selectedDate.value)
-            HomeScreen(state = viewModel.state.value) { accountName, initialValue ->
-                viewModel.onAddConta(accountName, initialValue)
+            if (!LocalInspectionMode.current) {
+                HomeScreen(selectedDate = selectedDate, userId = userId)
+            } else {
+                HomeScreenPreview()
             }
         }
         composable(route = Transactions.route) {
-            val viewModel: TransactionsViewModel = koinViewModel()
-            viewModel.loadData(selectedDate.value)
-            TransactionsScreen(state = viewModel.state.value)
+            if (!LocalInspectionMode.current) {
+                TransactionsScreen(
+                    selectedDate = selectedDate,
+                    searchText = searchText,
+                    userId = userId
+                )
+            } else {
+                TransactionsScreenPreview()
+            }
         }
     }
 }

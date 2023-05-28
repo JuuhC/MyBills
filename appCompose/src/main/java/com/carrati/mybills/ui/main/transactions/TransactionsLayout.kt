@@ -1,5 +1,7 @@
 package com.carrati.mybills.appCompose.ui.main.transactions
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,41 +18,76 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DismissDirection.EndToStart
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Transacao
-import com.carrati.mybills.appCompose.R.drawable
 import com.carrati.domain.models.TransactionTypeEnum
+import com.carrati.mybills.appCompose.R.drawable
+import java.util.*
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Preview
 @Composable
-private fun TransactionsScreenPreview() {
+fun TransactionsScreenPreview() {
     val state by remember { mutableStateOf(TransactionsViewState()) }
-    state.transactionsByMonth = listOf(
+    state.transactionsAll = listOf(
         Transacao(),
-        Transacao().apply { efetuado = true },
+        Transacao().apply {
+            tipo = "Receita"
+            efetuado = true
+        },
         Transacao(),
         Transacao().apply { efetuado = true },
         Transacao()
     )
-    TransactionsScreen(state = state)
+    state.transactionsFiltered = state.transactionsAll
+    TransactionsLayout(state = state) {}
 }
 
 @Composable
-fun TransactionsScreen(state: TransactionsViewState) {
+fun TransactionsScreen(
+    selectedDate: MutableState<Calendar>,
+    userId: String,
+    searchText: MutableState<String>
+) {
+    val viewModel: TransactionsViewModel = koinViewModel { parametersOf(userId) }
+    viewModel.loadData(selectedDate.value)
+    viewModel.filterList(searchText.value)
+    TransactionsLayout(state = viewModel.state.value) { trasaction ->
+        viewModel.onDeleteTransaction(transacao = trasaction)
+    }
+}
+
+@Composable
+private fun TransactionsLayout(
+    state: TransactionsViewState,
+    onDeleteTransaction: (Transacao) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -67,8 +104,11 @@ fun TransactionsScreen(state: TransactionsViewState) {
                 item {
                     Spacer(modifier = Modifier.size(4.dp))
                 }
-                items(state.transactionsByMonth) { transaction ->
-                    TransactionItem(transaction = transaction)
+                items(state.transactionsFiltered) { transaction ->
+                    SwipeToDismissItem(
+                        transaction = transaction,
+                        onDeleteItem = onDeleteTransaction
+                    )
                 }
                 item {
                     Spacer(modifier = Modifier.size(4.dp))
@@ -79,16 +119,18 @@ fun TransactionsScreen(state: TransactionsViewState) {
 }
 
 @Composable
-fun TransactionItem(
+private fun TransactionItem(
     transaction: Transacao
 ) {
-    val darkColor = if (transaction.tipo == TransactionTypeEnum.EXPENSE.name) {
+    val isExpense = transaction.tipo?.contains(TransactionTypeEnum.EXPENSE.nome, ignoreCase = true)
+
+    val darkColor = if (isExpense == true) {
         Color(0xFF118336)
     } else {
         Color(0xFFED4588)
     }
 
-    val lightColor = if (transaction.tipo == TransactionTypeEnum.EXPENSE.name) {
+    val lightColor = if (isExpense == true) {
         Color(0xFF2AA653)
     } else {
         Color(0xFFF866A1)
@@ -147,4 +189,54 @@ fun TransactionItem(
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun SwipeToDismissItem(
+    transaction: Transacao,
+    onDeleteItem: (Transacao) -> Unit
+) {
+    val dismissState = rememberDismissState()
+    if (dismissState.isDismissed(EndToStart)) onDeleteItem(transaction)
+
+    SwipeToDismiss(
+        state = dismissState,
+        modifier = Modifier
+            .padding(vertical = Dp(1f)),
+        directions = setOf(EndToStart),
+        dismissThresholds = { direction ->
+            FractionalThreshold(if (direction == EndToStart) 0.1f else 0.05f)
+        },
+        background = {
+            val scale by animateFloatAsState(
+                if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
+            )
+            val color = if (!LocalInspectionMode.current) {
+                animateColorAsState(
+                    if (dismissState.targetValue == DismissValue.Default) Color.Gray else Color.Red
+                ).value
+            } else {
+                Color.Gray
+            }
+
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFEDF3FB))
+                    .padding(horizontal = Dp(20f)),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    tint = color,
+                    contentDescription = "Delete Icon",
+                    modifier = Modifier.scale(scale)
+                )
+            }
+        },
+        dismissContent = {
+            TransactionItem(transaction = transaction)
+        }
+    )
 }
