@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Transacao
 import com.carrati.mybills.appCompose.R.drawable
-import com.carrati.mybills.appCompose.ui.newTransaction.TransactionTypeEnum
+import com.carrati.domain.models.TransactionTypeEnum
 
 @Preview
 @Composable

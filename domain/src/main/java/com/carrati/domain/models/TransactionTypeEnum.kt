@@ -1,4 +1,4 @@
-package com.carrati.mybills.appCompose.ui.newTransaction
+package com.carrati.domain.models
 
 enum class TransactionTypeEnum {
     EXPENSE, INCOME, TRANSFER

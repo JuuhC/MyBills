@@ -52,13 +52,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.carrati.domain.models.TransactionTypeEnum
+import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
+import com.carrati.domain.models.TransactionTypeEnum.INCOME
+import com.carrati.domain.models.TransactionTypeEnum.TRANSFER
 import com.carrati.mybills.appCompose.R.drawable
 import com.carrati.mybills.appCompose.extensions.navigateSingleTopTo
 import com.carrati.mybills.appCompose.extensions.nextMonth
@@ -72,6 +74,8 @@ import com.carrati.mybills.appCompose.ui.main.transactions.TransactionsScreen
 import com.carrati.mybills.appCompose.ui.main.transactions.TransactionsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Preview
 @Composable
@@ -81,21 +85,38 @@ private fun MainScreenPreview() {
             Calendar.getInstance().startDay()
         )
     }
-    MainScreen(selectedDate)
+    MainScreen(selectedDate, "") {}
 }
 
 @Composable
 fun MainScreen(
-    selectedDate: MutableState<Calendar>
+    selectedDate: MutableState<Calendar>,
+    userId: String,
+    navigateToForms: (TransactionTypeEnum) -> Unit
 ) {
     val navController = rememberNavController()
     val isFabMenuVisible = remember { mutableStateOf(false) }
+
+    val currentBackStack by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStack?.destination?.route
+    val mainNavDestinations = listOf(Home, Transactions)
+    val currentScreen = mainNavDestinations.find { it.route == currentDestination } ?: Home
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "Olá, userName", color = Color.White) },
+                    title = {
+                        when (currentScreen) {
+                            Home -> {
+                                Text(text = "Olá, userName", color = Color.White)
+                            }
+
+                            Transactions -> {
+                                Text(text = "Transações", color = Color.White)
+                            }
+                        }
+                    },
                     backgroundColor = Color(0xFF33B5E5),
                     elevation = 0.dp,
                     actions = {
@@ -125,8 +146,8 @@ fun MainScreen(
                     cutoutShape = CircleShape,
                     elevation = 2.dp
                 ) {
-                    val currentBackStack by navController.currentBackStackEntryAsState()
-                    val currentDestinations = currentBackStack?.destination?.hierarchy
+                    // val currentBackStack by navController.currentBackStackEntryAsState()
+                    // val currentDestinations = currentBackStack?.destination?.hierarchy
 
                     listOf(Home, Transactions).forEach { item ->
                         BottomNavigationItem(
@@ -137,7 +158,7 @@ fun MainScreen(
                             selectedContentColor = Color(0xFF33B5E5),
                             unselectedContentColor = Color.Black.copy(0.4f),
                             alwaysShowLabel = true,
-                            selected = currentDestinations?.any { it.route == item.route } == true,
+                            selected = item == currentScreen, // currentDestinations?.any { it.route == item.route } == true,
                             onClick = {
                                 navController.navigateSingleTopTo(item.route)
                             }
@@ -152,12 +173,13 @@ fun MainScreen(
                 MainNavHost(
                     navController = navController,
                     selectedDate = selectedDate,
+                    userId = userId,
                     modifier = Modifier.padding(innerPadding)
                 )
             }
         }
 
-        MainFABMenu(isFabMenuVisible)
+        MainFABMenu(isFabMenuVisible, navigateToForms)
     }
 }
 
@@ -209,6 +231,7 @@ fun MonthYearNavigationView(
 fun MainNavHost(
     navController: NavHostController,
     selectedDate: MutableState<Calendar>,
+    userId: String,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -217,12 +240,14 @@ fun MainNavHost(
         modifier = modifier
     ) {
         composable(route = Home.route) {
-            val viewModel = viewModel<HomeViewModel>()
+            val viewModel: HomeViewModel = koinViewModel { parametersOf(userId) }
             viewModel.loadData(selectedDate.value)
-            HomeScreen(state = viewModel.state.value) { viewModel.onAddConta() }
+            HomeScreen(state = viewModel.state.value) { accountName, initialValue ->
+                viewModel.onAddConta(accountName, initialValue)
+            }
         }
         composable(route = Transactions.route) {
-            val viewModel = viewModel<TransactionsViewModel>()
+            val viewModel: TransactionsViewModel = koinViewModel()
             viewModel.loadData(selectedDate.value)
             TransactionsScreen(state = viewModel.state.value)
         }
@@ -232,7 +257,8 @@ fun MainNavHost(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainFABMenu(
-    isFabMenuVisible: MutableState<Boolean>
+    isFabMenuVisible: MutableState<Boolean>,
+    navigateToForms: (TransactionTypeEnum) -> Unit
 ) {
     AnimatedVisibility(
         visible = isFabMenuVisible.value,
@@ -282,7 +308,7 @@ fun MainFABMenu(
                     text = "Despesa",
                     fabBackgroudColor = Color(0xFFF866A1),
                     iconRes = drawable.ic_despesa_24dp
-                ) {}
+                ) { navigateToForms(EXPENSE) }
                 MainFABMenuItem(
                     animScope = this@AnimatedVisibility,
                     enterAnim = fadeIn() + slideIn { IntOffset(0, 100) },
@@ -291,7 +317,7 @@ fun MainFABMenu(
                     text = "Transferência",
                     fabBackgroudColor = Color(0xFF33B5E5),
                     iconRes = drawable.ic_transferencia_24dp
-                ) {}
+                ) { navigateToForms(TRANSFER) }
                 MainFABMenuItem(
                     animScope = this@AnimatedVisibility,
                     enterAnim = fadeIn() + slideIn { IntOffset(-it.width, 100) },
@@ -300,7 +326,7 @@ fun MainFABMenu(
                     text = "Receita",
                     fabBackgroudColor = Color(0xFF2AA653),
                     iconRes = drawable.ic_receita_24dp
-                ) {}
+                ) { navigateToForms(INCOME) }
             }
         }
     }

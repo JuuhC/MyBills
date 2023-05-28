@@ -1,6 +1,8 @@
 package com.carrati.mybills.appCompose.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -25,10 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,16 +49,18 @@ import com.carrati.mybills.appCompose.ui.main.home.HomeViewState
 private fun Preview() {
     val state by remember { mutableStateOf(HomeViewState()) }
     state.contas = listOf(Conta("Conta", 10.0), Conta("Conta", 20.0), Conta("Conta", 30.0))
-    HomeScreen(state) {}
+    HomeScreen(state) { _, _ -> }
 }
 
 @Composable
-fun HomeScreen(state: HomeViewState, onAddConta: () -> Unit) {
+fun HomeScreen(state: HomeViewState, onCreateAccount: (String, Double) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFEDF3FB))
     ) {
+        val showCreateAccountDialog = remember { mutableStateOf(false) }
+
         if (state.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier
@@ -87,7 +98,7 @@ fun HomeScreen(state: HomeViewState, onAddConta: () -> Unit) {
                                 backgroundColor = Color.Transparent
                             ),
                             contentPadding = PaddingValues(0.dp),
-                            onClick = { onAddConta() }
+                            onClick = { showCreateAccountDialog.value = true }
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Add,
@@ -102,15 +113,22 @@ fun HomeScreen(state: HomeViewState, onAddConta: () -> Unit) {
                     CardConta(state.contas)
                 }
             }
+
+            AnimatedVisibility(visible = showCreateAccountDialog.value) {
+                CreateAccountDialog(
+                    onConfirmButton = onCreateAccount,
+                    setVisible = { showCreateAccountDialog.value = it }
+                )
+            }
         }
     }
 }
 
 @Composable
 fun SaldoCard(
-    saldoTotal: Float,
-    receitas: Float,
-    despesas: Float,
+    saldoTotal: Double,
+    receitas: Double,
+    despesas: Double,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -199,7 +217,14 @@ fun CardConta(
         ) {
             contas.forEach { conta ->
                 Row(
-                    Modifier.fillMaxWidth().padding(16.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .pointerInput(Unit) {
+                            detectTapGestures(onPress = {
+
+                            })
+                        },
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
@@ -216,4 +241,61 @@ fun CardConta(
             }
         }
     }
+}
+
+@Composable
+fun CreateAccountDialog(
+    onConfirmButton: (String, Double) -> Unit,
+    setVisible: (Boolean) -> Unit
+) {
+    var accountName by remember { mutableStateOf("teste") }
+    var initialValue by remember { mutableStateOf(0.0) }
+
+    AlertDialog(
+        onDismissRequest = { setVisible(false) },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirmButton(accountName, initialValue)
+                setVisible(false)
+            }) {
+                Text("OK", color = Color(0xFF33B5E5))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                setVisible(false)
+            }) {
+                Text("CANCELAR", color = Color(0xFF33B5E5))
+            }
+        },
+        title = { Text(text = "Adicionar Conta", fontSize = 20.sp) },
+        text = {
+            Column {
+                Text(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = "Preencha os dados da conta:"
+                )
+                OutlinedTextField(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    value = accountName,
+                    label = { Text(text = "Nome da conta") },
+                    onValueChange = { accountName = it },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
+                )
+                OutlinedTextField(
+                    modifier = Modifier.padding(top = 8.dp),
+                    value = "R$%.2f".format(initialValue),
+                    label = { Text(text = "Saldo inicial") },
+                    onValueChange = { initialValue = it.toDoubleOrNull() ?: 0.0 },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    )
+                )
+            }
+        }
+    )
 }

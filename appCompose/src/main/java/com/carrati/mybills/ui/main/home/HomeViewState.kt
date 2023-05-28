@@ -5,9 +5,10 @@ import java.util.*
 
 data class HomeViewState(
     var isLoading: Boolean = false,
+    var errorMessage: String = "",
     var contas: List<Conta> = emptyList(),
-    var saldo: Float = 0.0f,
-    var receitas: Float = 0.0f,
-    var despesas: Float = 0.0f,
+    var saldo: Double = 0.0,
+    var receitas: Double = 0.0,
+    var despesas: Double = 0.0,
     var selectedDate: Calendar = Calendar.getInstance()
 )

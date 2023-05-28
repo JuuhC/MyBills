@@ -44,9 +44,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.carrati.mybills.appCompose.ui.newTransaction.TransactionTypeEnum.EXPENSE
-import com.carrati.mybills.appCompose.ui.newTransaction.TransactionTypeEnum.INCOME
-import com.carrati.mybills.appCompose.ui.newTransaction.TransactionTypeEnum.TRANSFER
+import com.carrati.domain.models.TransactionTypeEnum
+import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
+import com.carrati.domain.models.TransactionTypeEnum.INCOME
+import com.carrati.domain.models.TransactionTypeEnum.TRANSFER
 import java.util.*
 
 @Preview
