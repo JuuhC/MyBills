@@ -1,8 +1,11 @@
 package com.carrati.mybills.appCompose.ui.main.transactions
 
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.mybills.appCompose.R.drawable
+import com.carrati.mybills.ui.forms.expenseIncome.FormExpenseIncomeActivity
 import java.util.*
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -58,11 +63,14 @@ fun TransactionsScreenPreview() {
     state.transactionsAll = listOf(
         Transacao(),
         Transacao().apply {
-            tipo = "Receita"
+            tipo = "Despesa"
             efetuado = true
         },
         Transacao(),
-        Transacao().apply { efetuado = true },
+        Transacao().apply {
+            tipo = "Despesa"
+            efetuado = true
+        },
         Transacao()
     )
     state.transactionsFiltered = state.transactionsAll
@@ -122,22 +130,41 @@ private fun TransactionsLayout(
 private fun TransactionItem(
     transaction: Transacao
 ) {
+    val context = LocalContext.current
     val isExpense = transaction.tipo?.contains(TransactionTypeEnum.EXPENSE.nome, ignoreCase = true)
 
     val darkColor = if (isExpense == true) {
-        Color(0xFF118336)
-    } else {
         Color(0xFFED4588)
+    } else {
+        Color(0xFF118336)
     }
 
     val lightColor = if (isExpense == true) {
-        Color(0xFF2AA653)
-    } else {
         Color(0xFFF866A1)
+    } else {
+        Color(0xFF2AA653)
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .clickable {
+                if (transaction.tipo == TransactionTypeEnum.TRANSFER.nome) {
+                    Toast.makeText(
+                        context,
+                        "Transferências não podem ser editadas, somente excluídas",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@clickable
+                }
+                context.startActivity(
+                    Intent(context, FormExpenseIncomeActivity::class.java).apply {
+                        this.putExtra(FormExpenseIncomeActivity.EXTRA_TYPE, transaction.tipo)
+                        this.putExtra(FormExpenseIncomeActivity.EXTRA_TRANSACTION, transaction)
+                    }
+                )
+            },
         shape = RoundedCornerShape(20.dp),
         backgroundColor = Color.White,
         elevation = 2.dp

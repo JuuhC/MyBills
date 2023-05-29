@@ -1,5 +1,6 @@
 package com.carrati.mybills.appCompose.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
@@ -8,6 +9,8 @@ import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
 import com.carrati.domain.models.TransactionTypeEnum.INCOME
 import com.carrati.domain.models.TransactionTypeEnum.TRANSFER
+import com.carrati.mybills.ui.forms.expenseIncome.FormExpenseIncomeActivity
+import com.carrati.mybills.ui.forms.transfer.FormTransferActivity
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -26,10 +29,14 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun navigateToForms(type: TransactionTypeEnum) {
-        when (type) {
-            EXPENSE -> {}
-            INCOME -> {}
-            TRANSFER -> {}
+        val intent = when (type) {
+            EXPENSE,
+            INCOME -> Intent(this, FormExpenseIncomeActivity::class.java).apply {
+                this.putExtra(FormExpenseIncomeActivity.EXTRA_TYPE, type.nome)
+            }
+            TRANSFER -> Intent(this, FormTransferActivity::class.java)
         }
+        startActivity(intent)
+        this.onStop()
     }
 }
