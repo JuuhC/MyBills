@@ -100,8 +100,8 @@ class TransferenciaActivity : AppCompatActivity() {
             this.efetuado = true
         }
 
-        //viewModel.salvarTransacao(usuario.uid!!, selectedPeriod!!, transacao1, transacao2)
-        //viewModel.transferenciaLiveData.observe(this, observerSalvar)
+        viewModel.salvarTransacao(usuario.uid!!, selectedPeriod!!, transacao1, transacao2)
+        viewModel.transferenciaLiveData.observe(this, observerSalvar)
     }
 
     private fun processResponseSave(response: Response?) {

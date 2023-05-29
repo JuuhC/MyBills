@@ -45,7 +45,7 @@ class FormExpenseIncomeViewModel(
         carregarContas()
     }
 
-    fun carregarContas() {
+    private fun carregarContas() {
         state.value = state.value.copy(loading = true)
         CoroutineScope(Dispatchers.IO).launch {
             try {
