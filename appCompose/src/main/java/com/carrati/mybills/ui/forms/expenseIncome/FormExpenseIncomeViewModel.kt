@@ -11,6 +11,7 @@ import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarReceitaDespesaUC
 import com.carrati.domain.usecases.transacoes.EditarTransacaoUC
+import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
 import com.carrati.mybills.appCompose.extensions.toCalendar
 import com.carrati.mybills.appCompose.extensions.toYearMonth
 import com.carrati.mybills.appCompose.extensions.toYearMonthDay
@@ -20,14 +21,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ExpenseViewModel(
-    private val userId: String,
+class FormExpenseIncomeViewModel(
+    private val transactionType: TransactionTypeEnum,
     private val oldTransaction: Transacao?,
+    private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
     private val cadastrarReceitaDespesaUC: CadastrarReceitaDespesaUC,
     private val listarContasUC: ListarContasUC,
     private val editarTransacaoUC: EditarTransacaoUC
 ) : ViewModel() {
+
     val state: MutableState<FormTransactionViewState> = mutableStateOf(FormTransactionViewState())
+    private val userId: String = obterUsuarioFirestoreUC.execute()?.value?.uid!!
 
     init {
         if (oldTransaction != null)
@@ -68,7 +72,7 @@ class ExpenseViewModel(
         viewModelScope.launch {
             try {
                 val transacao = Transacao().apply {
-                    this.tipo = TransactionTypeEnum.EXPENSE.nome
+                    this.tipo = transactionType.nome
                     this.data = state.value.date.toYearMonthDay()
                     this.nome = state.value.description
                     this.valor = state.value.amount
