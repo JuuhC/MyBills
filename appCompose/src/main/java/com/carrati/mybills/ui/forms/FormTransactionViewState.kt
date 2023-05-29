@@ -1,9 +1,13 @@
 package com.carrati.mybills.appCompose.ui.newTransaction
 
-data class TransactionViewState(
-    var amount: Float = 0.0f,
+import java.util.*
+
+data class FormTransactionViewState(
+    var loading: Boolean = false,
+    var errorMsg: String = "",
+    var amount: Double = 0.0,
     var paid: Boolean = false,
-    var date: String = "",
+    var date: Calendar = Calendar.getInstance(),
     var description: String = "",
     var account1: String = "",
     var account2: String = "",

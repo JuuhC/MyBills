@@ -48,33 +48,35 @@ import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
 import com.carrati.domain.models.TransactionTypeEnum.INCOME
 import com.carrati.domain.models.TransactionTypeEnum.TRANSFER
+import com.carrati.mybills.appCompose.extensions.toCalendar
+import com.carrati.mybills.appCompose.extensions.toYearMonthDay
 import java.util.*
 
 @Preview
 @Composable
 fun ExpenseScreenPreview() {
-    val state = remember { mutableStateOf(TransactionViewState()) }
-    TransactionScreen(EXPENSE, state) { }
+    val state = remember { mutableStateOf(FormTransactionViewState()) }
+    FormTransactionScreen(EXPENSE, state) { }
 }
 
 @Preview
 @Composable
 fun IncomeScreenPreview() {
-    val state = remember { mutableStateOf(TransactionViewState()) }
-    TransactionScreen(INCOME, state) { }
+    val state = remember { mutableStateOf(FormTransactionViewState()) }
+    FormTransactionScreen(INCOME, state) { }
 }
 
 @Preview
 @Composable
-fun TransferScreenPreview() {
-    val state = remember { mutableStateOf(TransactionViewState()) }
-    TransactionScreen(TRANSFER, state) { }
+fun FormTransferScreenPreview() {
+    val state = remember { mutableStateOf(FormTransactionViewState()) }
+    FormTransactionScreen(TRANSFER, state) { }
 }
 
 @Composable
-fun TransactionScreen(
+fun FormTransactionScreen(
     type: TransactionTypeEnum,
-    viewState: MutableState<TransactionViewState>,
+    viewState: MutableState<FormTransactionViewState>,
     onSaveTransaction: () -> Unit
 ) {
     Scaffold(
@@ -115,7 +117,7 @@ fun TransactionScreen(
 @Composable
 fun HeaderValue(
     type: TransactionTypeEnum,
-    viewState: MutableState<TransactionViewState>
+    viewState: MutableState<FormTransactionViewState>
 ) {
     Row(
         modifier = Modifier
@@ -144,7 +146,7 @@ fun HeaderValue(
                 .wrapContentWidth(align = Alignment.End),
             value = "R$%.2f".format(viewState.value.amount),
             onValueChange = {
-                viewState.value.amount = it.toFloatOrNull() ?: 0f
+                viewState.value.amount = it.toDoubleOrNull() ?: 0.0
             },
             textStyle = TextStyle(
                 fontSize = 30.sp,
@@ -168,7 +170,7 @@ fun HeaderValue(
 @Composable
 fun FieldPaid(
     modifier: Modifier,
-    viewState: MutableState<TransactionViewState>
+    viewState: MutableState<FormTransactionViewState>
 ) {
     TextField(
         value = "",
@@ -201,11 +203,11 @@ fun FieldPaid(
 @Composable
 fun FieldDate(
     modifier: Modifier,
-    viewState: MutableState<TransactionViewState>
+    viewState: MutableState<FormTransactionViewState>
 ) {
     TextField(
-        value = viewState.value.date,
-        onValueChange = { viewState.value.date = it },
+        value = viewState.value.date.toYearMonthDay(),
+        onValueChange = { viewState.value.date = it.toCalendar() },
         modifier = modifier,
         label = { Text(text = "Data") },
         leadingIcon = {
@@ -227,7 +229,7 @@ fun FieldDate(
 @Composable
 fun FieldDescription(
     modifier: Modifier,
-    viewState: MutableState<TransactionViewState>,
+    viewState: MutableState<FormTransactionViewState>,
     onSaveTransaction: () -> Unit
 ) {
     TextField(
@@ -259,7 +261,7 @@ fun FieldDescription(
 @Composable
 fun FieldAccount(
     modifier: Modifier,
-    viewState: MutableState<TransactionViewState>,
+    viewState: MutableState<FormTransactionViewState>,
     isAccount1: Boolean
 ) {
     var expanded by remember { mutableStateOf(false) }

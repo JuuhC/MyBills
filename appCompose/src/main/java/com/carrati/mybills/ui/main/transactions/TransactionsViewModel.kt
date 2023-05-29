@@ -9,8 +9,7 @@ import com.carrati.data.api.FirebaseAPI
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.usecases.transacoes.DeletarTransacaoUC
 import com.carrati.domain.usecases.transacoes.ListarTransacoesUC
-import com.carrati.mybills.appCompose.extensions.month
-import com.carrati.mybills.appCompose.extensions.year
+import com.carrati.mybills.appCompose.extensions.toYearMonth
 import java.lang.Exception
 import java.util.Calendar
 import kotlinx.coroutines.launch
@@ -26,8 +25,7 @@ class TransactionsViewModel(
         state.value = state.value.copy(isLoading = true, errorMessage = "")
         viewModelScope.launch {
             try {
-                val selectedPeriod = "${selectedDate.year}-${selectedDate.month}"
-                val list = listarTransacoesUC.execute(userId, selectedPeriod)
+                val list = listarTransacoesUC.execute(userId, selectedDate.toYearMonth())
                 state.value = state.value.copy(
                     isLoading = false,
                     errorMessage = "",
@@ -47,11 +45,10 @@ class TransactionsViewModel(
     }
 
     fun onDeleteTransaction(transacao: Transacao) {
-        val selectedPeriod = "${state.value.selectedDate.year}-${state.value.selectedDate.month}"
         state.value = state.value.copy(isLoading = true, errorMessage = "")
         viewModelScope.launch {
             try {
-                deletarTransacaoUC.execute(userId, selectedPeriod, transacao)
+                deletarTransacaoUC.execute(userId, state.value.selectedDate.toYearMonth(), transacao)
                 loadData(state.value.selectedDate)
             } catch (e: Exception) {
                 Log.e("exception deletar transacao", e.toString())

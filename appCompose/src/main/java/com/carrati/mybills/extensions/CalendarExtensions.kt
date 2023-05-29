@@ -1,5 +1,6 @@
 package com.carrati.mybills.appCompose.extensions
 
+import java.text.SimpleDateFormat
 import java.util.*
 
 var Calendar.year: Int
@@ -40,4 +41,26 @@ fun Calendar.endDay(): Calendar {
 
 fun Calendar.cloneCalendar(): Calendar {
     return this.clone() as Calendar
+}
+
+fun Calendar.toYearMonth(): String {
+    return "${this.year}-${this.month}"
+}
+
+fun Calendar.toYearMonthDay(): String {
+    return "${this.year}-${this.month}-${this.day}"
+}
+
+fun String?.toCalendar(format: String = "yyyy-MM-dd"): Calendar {
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    val calendar = Calendar.getInstance()
+
+    if(this.isNullOrBlank()) return calendar
+
+    val date = dateFormat.parse(this)
+    if (date != null) {
+        calendar.time = date
+    }
+
+    return calendar
 }
