@@ -329,10 +329,13 @@ fun MainFABMenu(
                     enterAnim = fadeIn() + slideIn { IntOffset(it.width, 100) },
                     exitAnim = fadeOut() + slideOut { IntOffset(it.width, 100) },
                     bottomPadding = 50.dp,
-                    text = "Despesa",
-                    fabBackgroudColor = Color(0xFFF866A1),
-                    iconRes = drawable.ic_despesa_24dp
-                ) { navigateToForms(EXPENSE) }
+                    text = "Receita",
+                    fabBackgroudColor = Color(0xFF2AA653),
+                    iconRes = drawable.ic_receita_24dp
+                ) {
+                    isFabMenuVisible.value = false
+                    navigateToForms(INCOME)
+                }
                 MainFABMenuItem(
                     animScope = this@AnimatedVisibility,
                     enterAnim = fadeIn() + slideIn { IntOffset(0, 100) },
@@ -341,16 +344,22 @@ fun MainFABMenu(
                     text = "Transferência",
                     fabBackgroudColor = Color(0xFF33B5E5),
                     iconRes = drawable.ic_transferencia_24dp
-                ) { navigateToForms(TRANSFER) }
+                ) {
+                    isFabMenuVisible.value = false
+                    navigateToForms(TRANSFER)
+                }
                 MainFABMenuItem(
                     animScope = this@AnimatedVisibility,
                     enterAnim = fadeIn() + slideIn { IntOffset(-it.width, 100) },
                     exitAnim = fadeOut() + slideOut { IntOffset(-it.width, 100) },
                     bottomPadding = 50.dp,
-                    text = "Receita",
-                    fabBackgroudColor = Color(0xFF2AA653),
-                    iconRes = drawable.ic_receita_24dp
-                ) { navigateToForms(INCOME) }
+                    text = "Despesa",
+                    fabBackgroudColor = Color(0xFFF866A1),
+                    iconRes = drawable.ic_despesa_24dp
+                ) {
+                    isFabMenuVisible.value = false
+                    navigateToForms(EXPENSE)
+                }
             }
         }
     }

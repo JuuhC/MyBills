@@ -106,8 +106,8 @@
                     android:layout_gravity="center"
                     android:src="@drawable/ic_receita_24dp"
                     android:contentDescription="@string/title_transacoes"
-                    app:backgroundTint="@android:color/white"
-                    app:tint="@null"
+                    app:backgroundTint="@color/light_green"
+                    app:tint="@color/white"
                     app:fabCustomSize="40dp"/>
             </LinearLayout>
 
@@ -137,8 +137,8 @@
                     android:layout_gravity="center"
                     android:src="@drawable/ic_transferencia_24dp"
                     android:contentDescription="@string/title_transacoes"
-                    app:backgroundTint="@android:color/white"
-                    app:tint="@null"
+                    app:backgroundTint="@android:color/holo_blue_light"
+                    app:tint="@color/white"
                     app:fabCustomSize="40dp"/>
             </LinearLayout>
 
@@ -169,8 +169,8 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_despesa_24dp"
                     android:contentDescription="@string/title_transacoes"
-                    app:backgroundTint="@android:color/white"
-                    app:tint="@null"
+                    app:backgroundTint="@color/colorPink"
+                    app:tint="@color/white"
                     app:fabCustomSize="40dp"/>
             </LinearLayout>
 
