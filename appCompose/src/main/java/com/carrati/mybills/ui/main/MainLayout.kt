@@ -3,9 +3,11 @@ package com.carrati.mybills.appCompose.ui.main
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
@@ -45,6 +47,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -303,10 +306,14 @@ fun MainFABMenu(
                 color = Color.Black.copy(alpha = 0.7f)
             ) {}
 
+            val rotate by transition.animateFloat(label = "rotateFabAnim") { state ->
+                if (state == EnterExitState.Visible) 135f else 0f
+            }
             FloatingActionButton(
                 onClick = { isFabMenuVisible.value = isFabMenuVisible.value.not() },
                 modifier = Modifier
                     .padding(28.dp)
+                    .rotate(rotate)
                     .animateEnterExit(
                         enter = fadeIn(),
                         exit = fadeOut()
@@ -315,7 +322,7 @@ fun MainFABMenu(
                 elevation = FloatingActionButtonDefaults.elevation(0.dp)
             ) {
                 Icon(
-                    imageVector = Filled.Close,
+                    imageVector = Filled.Add,
                     contentDescription = null,
                     tint = Color.White
                 )
