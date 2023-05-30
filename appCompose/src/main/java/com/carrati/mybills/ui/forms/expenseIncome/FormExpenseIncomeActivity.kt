@@ -1,4 +1,4 @@
-package com.carrati.mybills.ui.forms.expenseIncome
+package com.carrati.mybills.appCompose.ui.forms.expenseIncome
 
 import android.app.Activity
 import android.os.Bundle
