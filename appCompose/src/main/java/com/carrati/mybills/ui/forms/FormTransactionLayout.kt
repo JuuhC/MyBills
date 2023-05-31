@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
@@ -88,16 +89,23 @@ fun FormTransactionScreen(
             )
         },*/
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onSaveTransaction() },
-                modifier = Modifier.padding(bottom = 16.dp),
-                backgroundColor = Color(0xFFFAC853)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = null,
-                    tint = Color.White
+            if (viewState.value.loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    color = Color(0xFFFAC853)
                 )
+            } else {
+                FloatingActionButton(
+                    onClick = { onSaveTransaction() },
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    backgroundColor = Color(0xFFFAC853)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
             }
         },
         floatingActionButtonPosition = FabPosition.Center

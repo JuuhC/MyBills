@@ -59,15 +59,15 @@ class FormExpenseIncomeViewModel(
         }
     }
 
-    fun salvarTransacao(onSuccess: () -> Unit) {
+    fun salvarTransacao(onSuccess: () -> Unit, onError: (String) -> Unit) {
         if (oldTransaction != null) {
-            editarTransacao(onSuccess)
+            editarTransacao(onSuccess, onError)
         } else {
-            criarTransacao(onSuccess)
+            criarTransacao(onSuccess, onError)
         }
     }
 
-    private fun criarTransacao(onSuccess: () -> Unit) {
+    private fun criarTransacao(onSuccess: () -> Unit, onError: (String) -> Unit) {
         state.value = state.value.copy(loading = true)
         viewModelScope.launch {
             try {
@@ -84,15 +84,12 @@ class FormExpenseIncomeViewModel(
             } catch (e: Exception) {
                 Log.e("exception save despesa", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
-                state.value = state.value.copy(
-                    loading = false,
-                    errorMsg = "Erro ao salvar despesa: $e"
-                )
+                onError("Erro ao salvar despesa: $e")
             }
         }
     }
 
-    private fun editarTransacao(onSuccess: () -> Unit) {
+    private fun editarTransacao(onSuccess: () -> Unit, onError: (String) -> Unit) {
         state.value = state.value.copy(loading = true)
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -115,10 +112,7 @@ class FormExpenseIncomeViewModel(
             } catch (e: Exception) {
                 Log.e("exception save despesa", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
-                state.value = state.value.copy(
-                    loading = false,
-                    errorMsg = "Erro ao salvar despesa: $e"
-                )
+                onError("Erro ao salvar despesa: $e")
             }
         }
     }

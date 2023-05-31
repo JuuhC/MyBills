@@ -3,6 +3,7 @@ package com.carrati.mybills.appCompose.ui.forms.expenseIncome
 import android.app.Activity
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.carrati.domain.models.Transacao
@@ -27,10 +28,15 @@ class FormExpenseIncomeActivity : ComponentActivity() {
                 type = type,
                 viewState = viewModel.state
             ) {
-                viewModel.salvarTransacao {
-                    setResult(Activity.RESULT_OK)
-                    finish()
-                }
+                viewModel.salvarTransacao(
+                    onSuccess = {
+                        setResult(Activity.RESULT_OK)
+                        finish()
+                    },
+                    onError = { errorMsg ->
+                        Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+                    }
+                )
             }
         }
     }

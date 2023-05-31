@@ -46,7 +46,7 @@ class FormTransferViewModel(
         }
     }
 
-    fun salvarTransferencia(onSuccess: () -> Unit) {
+    fun salvarTransferencia(onSuccess: () -> Unit, onError: (String) -> Unit) {
         state.value = state.value.copy(loading = true)
         viewModelScope.launch {
             try {
@@ -76,10 +76,7 @@ class FormTransferViewModel(
             } catch (e: Exception) {
                 Log.e("exception save transferencia", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
-                state.value = state.value.copy(
-                    loading = false,
-                    errorMsg = "Erro ao salvar transferência: $e"
-                )
+                onError("Erro ao salvar transferência: $e")
             }
         }
     }
