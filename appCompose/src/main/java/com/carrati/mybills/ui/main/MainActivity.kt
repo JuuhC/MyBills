@@ -9,8 +9,8 @@ import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
 import com.carrati.domain.models.TransactionTypeEnum.INCOME
 import com.carrati.domain.models.TransactionTypeEnum.TRANSFER
-import com.carrati.mybills.ui.forms.expenseIncome.FormExpenseIncomeActivity
-import com.carrati.mybills.ui.forms.transfer.FormTransferActivity
+import com.carrati.mybills.appCompose.ui.forms.expenseIncome.FormExpenseIncomeActivity
+import com.carrati.mybills.appCompose.ui.forms.transfer.FormTransferActivity
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {

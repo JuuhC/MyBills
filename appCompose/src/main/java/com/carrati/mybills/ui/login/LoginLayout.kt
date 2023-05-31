@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,11 +16,11 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -55,8 +56,8 @@ fun LoginScreen(isLoading: MutableState<Boolean>, onSignInWithGoogle: () -> Unit
                 textAlign = TextAlign.Center
             )
             Image(
-                modifier = Modifier.padding(horizontal = 64.dp),
-                painter = painterResource(id = R.drawable.ic_piggy_bank),
+                modifier = Modifier.scale(1.3f).padding(vertical = 48.dp),
+                painter = painterResource(id = R.drawable.img_personal_finance),
                 contentDescription = "Piggy bank"
             )
             Text(
