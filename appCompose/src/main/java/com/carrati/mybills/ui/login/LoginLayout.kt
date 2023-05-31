@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -56,7 +55,6 @@ fun LoginScreen(isLoading: MutableState<Boolean>, onSignInWithGoogle: () -> Unit
                 textAlign = TextAlign.Center
             )
             Image(
-                modifier = Modifier.scale(1.3f).padding(vertical = 48.dp),
                 painter = painterResource(id = R.drawable.img_personal_finance),
                 contentDescription = "Piggy bank"
             )
@@ -73,13 +71,13 @@ fun LoginScreen(isLoading: MutableState<Boolean>, onSignInWithGoogle: () -> Unit
                 text = "Começar agora:",
                 color = Color.White
             )
-            SignInWithGoogleButton(onSignInWithGoogle)
+            SignInWithGoogleButton(isLoading, onSignInWithGoogle)
         }
     }
 }
 
 @Composable
-fun SignInWithGoogleButton(onClick: () -> Unit) {
+fun SignInWithGoogleButton(isLoading: MutableState<Boolean>, onClick: () -> Unit) {
     Button(
         onClick = {
             onClick()
@@ -93,11 +91,20 @@ fun SignInWithGoogleButton(onClick: () -> Unit) {
             contentColor = Color.DarkGray
         )
     ) {
-        Image(
-            modifier = Modifier.size(24.dp),
-            painter = painterResource(id = R.drawable.ic_logo_google),
-            contentDescription = ""
-        )
-        Text(text = "Sign in with Google", modifier = Modifier.padding(6.dp))
+        if (isLoading.value.not()) {
+            Image(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.ic_logo_google),
+                contentDescription = ""
+            )
+            Text(text = "Sign in with Google", modifier = Modifier.padding(6.dp))
+        } else {
+            CircularProgressIndicator(
+                color = Color(0xFFFAC853),
+                modifier = Modifier
+                    .size(30.dp)
+                    .padding(vertical = 6.dp)
+            )
+        }
     }
 }
