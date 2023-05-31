@@ -21,14 +21,14 @@ class TransactionsViewModel(
 ) : ViewModel() {
     val state: MutableState<TransactionsViewState> = mutableStateOf(TransactionsViewState())
 
-    fun loadData(selectedDate: Calendar) {
-        state.value = state.value.copy(isLoading = true, errorMessage = "")
+    fun loadData(selectedDate: Calendar = state.value.selectedDate) {
+        state.value = state.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             try {
                 val list = listarTransacoesUC.execute(userId, selectedDate.toYearMonth())
                 state.value = state.value.copy(
                     isLoading = false,
-                    errorMessage = "",
+                    isError = false,
                     transactionsAll = list,
                     transactionsFiltered = list,
                     selectedDate = selectedDate
@@ -38,14 +38,14 @@ class TransactionsViewModel(
                 FirebaseAPI().sendThrowableToFirebase(e)
                 state.value = state.value.copy(
                     isLoading = false,
-                    errorMessage = "Erro ao listar transações: $e"
+                    isError = true
                 )
             }
         }
     }
 
     fun onDeleteTransaction(transacao: Transacao) {
-        state.value = state.value.copy(isLoading = true, errorMessage = "")
+        state.value = state.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             try {
                 deletarTransacaoUC.execute(userId, state.value.selectedDate.toYearMonth(), transacao)
@@ -55,7 +55,7 @@ class TransactionsViewModel(
                 FirebaseAPI().sendThrowableToFirebase(e)
                 state.value = state.value.copy(
                     isLoading = false,
-                    errorMessage = "Erro ao deletar transação: $e"
+                    isError = true
                 )
             }
         }

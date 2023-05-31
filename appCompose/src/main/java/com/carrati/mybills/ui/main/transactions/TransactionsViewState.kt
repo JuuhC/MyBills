@@ -5,7 +5,7 @@ import java.util.*
 
 data class TransactionsViewState(
     var isLoading: Boolean = false,
-    var errorMessage: String = "",
+    var isError: Boolean = false,
     var transactionsAll: List<Transacao> = emptyList(),
     var transactionsFiltered: List<Transacao> = emptyList(),
     var selectedDate: Calendar = Calendar.getInstance()

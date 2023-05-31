@@ -50,8 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.TransactionTypeEnum
-import com.carrati.mybills.appCompose.R.drawable
-import com.carrati.mybills.ui.forms.expenseIncome.FormExpenseIncomeActivity
+import com.carrati.mybills.appCompose.R
+import com.carrati.mybills.appCompose.ui.common.EmptyListLayout
+import com.carrati.mybills.appCompose.ui.common.ErrorMessageLayout
+import com.carrati.mybills.appCompose.ui.forms.expenseIncome.FormExpenseIncomeActivity
 import java.util.*
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -74,7 +76,7 @@ fun TransactionsScreenPreview() {
         Transacao()
     )
     state.transactionsFiltered = state.transactionsAll
-    TransactionsLayout(state = state) {}
+    TransactionsLayout(state = state, onDeleteTransaction = {}, onRefreshData = {})
 }
 
 @Composable
@@ -86,40 +88,56 @@ fun TransactionsScreen(
     val viewModel: TransactionsViewModel = koinViewModel { parametersOf(userId) }
     viewModel.loadData(selectedDate.value)
     viewModel.filterList(searchText.value)
-    TransactionsLayout(state = viewModel.state.value) { trasaction ->
-        viewModel.onDeleteTransaction(transacao = trasaction)
-    }
+    TransactionsLayout(
+        state = viewModel.state.value,
+        onDeleteTransaction = { trasaction ->
+            viewModel.onDeleteTransaction(transacao = trasaction)
+        },
+        onRefreshData = { viewModel.loadData() }
+    )
 }
 
 @Composable
 private fun TransactionsLayout(
     state: TransactionsViewState,
-    onDeleteTransaction: (Transacao) -> Unit
+    onDeleteTransaction: (Transacao) -> Unit,
+    onRefreshData: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFEDF3FB))
     ) {
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(60.dp)
-            )
-        } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                item {
-                    Spacer(modifier = Modifier.size(4.dp))
-                }
-                items(state.transactionsFiltered) { transaction ->
-                    SwipeToDismissItem(
-                        transaction = transaction,
-                        onDeleteItem = onDeleteTransaction
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.size(4.dp))
+        when {
+            state.isLoading -> {
+                CircularProgressIndicator(
+                    color = Color(0xFFFAC853),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 48.dp)
+                        .size(60.dp)
+                )
+            }
+            state.isError -> {
+                ErrorMessageLayout(onRefreshData)
+            }
+            state.transactionsAll.isEmpty() -> {
+                EmptyListLayout()
+            }
+            else -> {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    item {
+                        Spacer(modifier = Modifier.size(4.dp))
+                    }
+                    items(state.transactionsFiltered) { transaction ->
+                        SwipeToDismissItem(
+                            transaction = transaction,
+                            onDeleteItem = onDeleteTransaction
+                        )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.size(4.dp))
+                    }
                 }
             }
         }
@@ -176,7 +194,7 @@ private fun TransactionItem(
         ) {
             Icon(
                 modifier = Modifier.padding(16.dp),
-                painter = painterResource(id = drawable.ic_despesa_24dp),
+                painter = painterResource(id = R.drawable.ic_despesa_24dp),
                 tint = darkColor,
                 contentDescription = null
             )
