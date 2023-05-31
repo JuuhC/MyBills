@@ -57,46 +57,6 @@
             app:layout_constraintRight_toRightOf="parent"
             />
 
-        <!--<com.google.android.material.card.MaterialCardView
-            android:id="@+id/bt_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/light_yellow"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="26dp"
-            app:layout_constraintTop_toBottomOf="@id/image"
-            app:layout_constraintBottom_toTopOf="@id/bt_refresh"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="8dp"
-                    app:tint="@color/white"
-                    app:srcCompat="@drawable/ic_refresh_grey_24dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginVertical="12dp"
-                    android:layout_marginEnd="22dp"
-                    android:text="Tentar novamente" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>-->
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>
