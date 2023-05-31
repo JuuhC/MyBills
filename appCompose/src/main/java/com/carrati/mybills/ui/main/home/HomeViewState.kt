@@ -5,7 +5,7 @@ import java.util.*
 
 data class HomeViewState(
     var isLoading: Boolean = false,
-    var errorMessage: String = "",
+    var isError: Boolean = false,
     var contas: List<Conta> = emptyList(),
     var saldo: Double = 0.0,
     var receitas: Double = 0.0,

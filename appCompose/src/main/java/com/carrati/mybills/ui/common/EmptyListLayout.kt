@@ -22,44 +22,55 @@ import com.carrati.mybills.appCompose.R.drawable
 
 @Preview
 @Composable
+private fun PreviewCard() {
+    EmptyListCardLayout("Ops! Você não possui dados registrados este mês.")
+}
+
+@Preview
+@Composable
 private fun Preview() {
-    EmptyListLayout()
+    EmptyListLayout("Ops! Você não possui dados registrados este mês.")
 }
 
 @Composable
-fun EmptyListLayout() {
+fun EmptyListCardLayout(message: String) {
     Card(
         modifier = Modifier.padding(24.dp),
         shape = RoundedCornerShape(64.dp)
     ) {
-        Box {
-            Image(
-                painter = painterResource(id = drawable.img_no_data),
-                contentDescription = "Icon refresh",
-                modifier = Modifier.size(300.dp).align(Companion.TopCenter)
-            )
-            Text(
-                modifier = Modifier
-                    .align(Companion.TopCenter)
-                    .padding(top = 250.dp, start = 24.dp, end = 24.dp),
-                text = "Ops! Você não possui dados registrados este mês.",
-                color = Color.Gray,
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Light
-            )
-            Text(
-                modifier = Modifier
-                    .padding(top = 308.dp, bottom = 64.dp, start = 48.dp, end = 48.dp)
-                    .align(Companion.TopCenter),
-                text = "Para criar um novo item, clique no botão (+)",
-                color = Color.DarkGray,
-                textAlign = TextAlign.Center,
-                fontSize = 14.sp,
-                fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Medium
-            )
-        }
+        EmptyListLayout(message)
+    }
+}
+
+@Composable
+fun EmptyListLayout(message: String) {
+    Box {
+        Image(
+            painter = painterResource(id = drawable.img_no_data),
+            contentDescription = "Icon refresh",
+            modifier = Modifier.size(300.dp).align(Companion.TopCenter)
+        )
+        Text(
+            modifier = Modifier
+                .align(Companion.TopCenter)
+                .padding(top = 250.dp, start = 24.dp, end = 24.dp),
+            text = message,
+            color = Color.Gray,
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Light
+        )
+        Text(
+            modifier = Modifier
+                .padding(top = 308.dp, bottom = 64.dp, start = 48.dp, end = 48.dp)
+                .align(Companion.TopCenter),
+            text = "Para criar um novo item, clique no botão (+)",
+            color = Color.DarkGray,
+            textAlign = TextAlign.Center,
+            fontSize = 14.sp,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.Medium
+        )
     }
 }

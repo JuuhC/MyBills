@@ -26,8 +26,8 @@ class HomeViewModel(
 ) : ViewModel() {
     val state: MutableState<HomeViewState> = mutableStateOf(HomeViewState())
 
-    fun loadData(selectedDate: Calendar) {
-        state.value = state.value.copy(isLoading = true)
+    fun loadData(selectedDate: Calendar = state.value.selectedDate) {
+        state.value = state.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             try {
                 val dispatcher = Dispatchers.IO
@@ -38,6 +38,7 @@ class HomeViewModel(
                 }
                 state.value = state.value.copy(
                     isLoading = false,
+                    isError = false,
                     contas = list,
                     saldo = list.sumOf { it.saldo ?: 0.0 },
                     receitas = balancoMensal["receitas"] ?: 0.0,
@@ -49,14 +50,18 @@ class HomeViewModel(
                 FirebaseAPI().sendThrowableToFirebase(e)
                 state.value = state.value.copy(
                     isLoading = false,
-                    errorMessage = "Erro ao carregar dados: $e"
+                    isError = true
                 )
             }
         }
     }
 
-    fun onAddConta(accountName: String, initialValue: Double) {
-        state.value = state.value.copy(isLoading = true)
+    fun onAddConta(
+        accountName: String,
+        initialValue: Double,
+        onError: () -> Unit
+    ) {
+        state.value = state.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             try {
                 criarContaUC.execute(userId, Conta(accountName, initialValue))
@@ -64,10 +69,7 @@ class HomeViewModel(
             } catch (e: Exception) {
                 Log.e("exception cria conta", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
-                state.value = state.value.copy(
-                    isLoading = false,
-                    errorMessage = "Erro ao criar conta: $e"
-                )
+                onError()
             }
         }
     }

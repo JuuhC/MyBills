@@ -122,7 +122,7 @@ private fun TransactionsLayout(
                 ErrorMessageLayout(onRefreshData)
             }
             state.transactionsAll.isEmpty() -> {
-                EmptyListLayout()
+                EmptyListLayout("Ops! Você não possui dados registrados este mês.")
             }
             else -> {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {

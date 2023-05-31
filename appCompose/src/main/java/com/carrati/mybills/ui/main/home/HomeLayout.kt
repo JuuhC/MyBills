@@ -1,5 +1,6 @@
 package com.carrati.mybills.appCompose.ui.home
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +45,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Conta
+import com.carrati.mybills.appCompose.ui.common.EmptyListLayout
+import com.carrati.mybills.appCompose.ui.common.ErrorMessageLayout
 import com.carrati.mybills.appCompose.ui.main.home.HomeViewModel
 import com.carrati.mybills.appCompose.ui.main.home.HomeViewState
 import java.util.*
@@ -58,20 +62,37 @@ fun HomeScreenPreview() {
         Conta("Conta", 20.0),
         Conta("Conta", 30.0)
     )
-    HomeLayout(state) { _, _ -> }
+    HomeLayout(state, {}, { _, _ -> })
 }
 
 @Composable
 fun HomeScreen(selectedDate: MutableState<Calendar>, userId: String) {
+    val context = LocalContext.current
     val viewModel: HomeViewModel = koinViewModel { parametersOf(userId) }
     viewModel.loadData(selectedDate.value)
-    HomeLayout(state = viewModel.state.value) { accountName, initialValue ->
-        viewModel.onAddConta(accountName, initialValue)
-    }
+    HomeLayout(
+        state = viewModel.state.value,
+        onRefreshData = {
+            viewModel.loadData()
+        },
+        onCreateAccount = { accountName, initialValue ->
+            viewModel.onAddConta(accountName, initialValue) {
+                Toast.makeText(
+                    context,
+                    "Erro ao salvar conta. Tente novamente mais tarde.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    )
 }
 
 @Composable
-private fun HomeLayout(state: HomeViewState, onCreateAccount: (String, Double) -> Unit) {
+private fun HomeLayout(
+    state: HomeViewState,
+    onRefreshData: () -> Unit,
+    onCreateAccount: (String, Double) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -79,64 +100,75 @@ private fun HomeLayout(state: HomeViewState, onCreateAccount: (String, Double) -
     ) {
         val showCreateAccountDialog = remember { mutableStateOf(false) }
 
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(60.dp)
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                item {
-                    SaldoCard(
-                        saldoTotal = state.saldo,
-                        receitas = state.receitas,
-                        despesas = state.despesas,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                item {
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Contas",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            modifier = Modifier.padding(start = 16.dp, top = 24.dp, bottom = 16.dp),
-                            color = Color(0xFF8F8181)
+        when {
+            state.isLoading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 48.dp)
+                        .size(60.dp)
+                )
+            }
+            state.isError -> {
+                ErrorMessageLayout { onRefreshData() }
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(8.dp)
+                ) {
+                    item {
+                        SaldoCard(
+                            saldoTotal = state.saldo,
+                            receitas = state.receitas,
+                            despesas = state.despesas,
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        TextButton(
-                            colors = ButtonDefaults.textButtonColors(
-                                backgroundColor = Color.Transparent
-                            ),
-                            contentPadding = PaddingValues(0.dp),
-                            onClick = { showCreateAccountDialog.value = true }
+                    }
+                    item {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = null,
-                                tint = Color(0xF38F8181),
-                                modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
+                            Text(
+                                text = "Contas",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp,
+                                modifier = Modifier.padding(
+                                    start = 16.dp,
+                                    top = 24.dp,
+                                    bottom = 16.dp
+                                ),
+                                color = Color(0xFF8F8181)
                             )
+                            TextButton(
+                                colors = ButtonDefaults.textButtonColors(
+                                    backgroundColor = Color.Transparent
+                                ),
+                                contentPadding = PaddingValues(0.dp),
+                                onClick = { showCreateAccountDialog.value = true }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Add,
+                                    contentDescription = null,
+                                    tint = Color(0xFF33B5E5),
+                                    modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
+                                )
+                            }
                         }
                     }
+                    item {
+                        CardConta(state.contas)
+                    }
                 }
-                item {
-                    CardConta(state.contas)
-                }
-            }
 
-            AnimatedVisibility(visible = showCreateAccountDialog.value) {
-                CreateAccountDialog(
-                    onConfirmButton = onCreateAccount,
-                    setVisible = { showCreateAccountDialog.value = it }
-                )
+                AnimatedVisibility(visible = showCreateAccountDialog.value) {
+                    CreateAccountDialog(
+                        onConfirmButton = onCreateAccount,
+                        setVisible = { showCreateAccountDialog.value = it }
+                    )
+                }
             }
         }
     }
@@ -233,6 +265,9 @@ private fun CardConta(
         Column(
             Modifier.padding(16.dp)
         ) {
+            if (contas.isEmpty()) {
+                EmptyListLayout("Ops! Você não possui contas registradas")
+            }
             contas.forEach { conta ->
                 Row(
                     Modifier
