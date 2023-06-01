@@ -28,6 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.Dimension.Companion
 import com.carrati.mybills.appCompose.R
 
 @Preview
@@ -39,6 +42,83 @@ fun LoginScreenPreview() {
 
 @Composable
 fun LoginScreen(isLoading: MutableState<Boolean>, onSignInWithGoogle: () -> Unit) {
+    Scaffold {
+        ConstraintLayout(
+            modifier = Modifier.padding(it).fillMaxSize().background(Color(0xFF33B5E5))
+        ) {
+            val (text1, image, text2, text3, button) = createRefs()
+            val guideline = createGuidelineFromTop(0.65f)
+
+            Text(
+                modifier = Modifier.constrainAs(text1) {
+                    top.linkTo(parent.top, 64.dp)
+                    bottom.linkTo(image.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+                text = "MyBills",
+                color = Color.White,
+                fontSize = 50.sp,
+                fontWeight = FontWeight.ExtraBold,
+                fontFamily = FontFamily.Cursive,
+                textAlign = TextAlign.Center
+            )
+            Image(
+                modifier = Modifier.constrainAs(image) {
+                    top.linkTo(text1.bottom, margin = 16.dp)
+                    bottom.linkTo(guideline)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    height = Dimension.fillToConstraints
+                    width = Companion.fillToConstraints
+                },
+                painter = painterResource(id = R.drawable.img_personal_finance),
+                contentDescription = "Piggy bank"
+            )
+            Text(
+                modifier = Modifier.constrainAs(text2) {
+                    top.linkTo(image.bottom)
+                    start.linkTo(parent.start, margin = 48.dp)
+                    end.linkTo(parent.end, margin = 48.dp)
+                    width = Dimension.fillToConstraints
+                },
+                text = "Mapeie seus gastos e comece a economizar!",
+                color = Color.White,
+                fontSize = 19.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = FontFamily.SansSerif,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.constrainAs(text3) {
+                    bottom.linkTo(button.top, 12.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+                text = "Começar agora:",
+                color = Color.White,
+                fontFamily = FontFamily.SansSerif
+            )
+            SignInWithGoogleButton(
+                isLoading,
+                onSignInWithGoogle,
+                Modifier.constrainAs(button) {
+                    top.linkTo(text2.bottom, margin = 48.dp)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun OldLoginScreen(
+    isLoading: MutableState<Boolean>,
+    onSignInWithGoogle: () -> Unit
+) {
     Scaffold {
         Column(
             modifier = Modifier.padding(it).fillMaxSize().background(Color(0xFF33B5E5)),
@@ -77,12 +157,16 @@ fun LoginScreen(isLoading: MutableState<Boolean>, onSignInWithGoogle: () -> Unit
 }
 
 @Composable
-fun SignInWithGoogleButton(isLoading: MutableState<Boolean>, onClick: () -> Unit) {
+fun SignInWithGoogleButton(
+    isLoading: MutableState<Boolean>,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick = {
             onClick()
         },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 48.dp),
         shape = RoundedCornerShape(48.dp),
