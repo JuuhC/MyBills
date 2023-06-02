@@ -3,8 +3,6 @@ package com.carrati.mybills.app.ui.transferencia
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.Toast
@@ -52,22 +50,30 @@ class TransferenciaActivity : AppCompatActivity() {
         if (binding.edtData.text.toString().isBlank()) {
             binding.tvDataLayout.error = "Selecione uma data"
             return
-        } else binding.tvDataLayout.error = null
+        } else {
+            binding.tvDataLayout.error = null
+        }
 
         if (binding.spinnerConta1.text.toString().isBlank()) {
             binding.spinnerContaLayout1.error = "Campo obrigatório"
             return
-        } else binding.spinnerContaLayout1.error = null
+        } else {
+            binding.spinnerContaLayout1.error = null
+        }
 
         if (binding.spinnerConta2.text.toString().isBlank()) {
             binding.spinnerContaLayout2.error = "Campo obrigatório"
             return
-        } else binding.spinnerContaLayout2.error = null
+        } else {
+            binding.spinnerContaLayout2.error = null
+        }
 
         if (binding.spinnerConta1.text.toString() == binding.spinnerConta2.text.toString()) {
             binding.spinnerContaLayout2.error = "Não é possivel transferir para mesma conta"
             return
-        } else binding.spinnerContaLayout2.error = null
+        } else {
+            binding.spinnerContaLayout2.error = null
+        }
 
         if (binding.edtValor.text.toString() == "" || binding.edtValor.text.toString() == "0.00") {
             Toast.makeText(this, "Valor não pode ser zero", Toast.LENGTH_LONG).show()
@@ -154,7 +160,10 @@ class TransferenciaActivity : AppCompatActivity() {
                                 results.count = list.size
                                 return results
                             }
-                            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                            override fun publishResults(
+                                constraint: CharSequence?,
+                                results: FilterResults?
+                            ) {
                                 notifyDataSetChanged()
                             }
                         }
@@ -180,9 +189,10 @@ class TransferenciaActivity : AppCompatActivity() {
     private fun inflateCalendar() {
         val mDateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
             val dayNew = if (day < 10) "0$day" else day.toString()
-            val monthNew = if (month + 1 < 10) "0${month + 1}" else "${month + 1}"
+            // val monthNew = if (month + 1 < 10) "0${month + 1}" else "${month + 1}"
+            val monthNew = month + 1
 
-            binding.edtData.setText("$year-$monthNew-$dayNew")
+            binding.edtData.setText("$year-$monthNew-$day")
             selectedPeriod = "$year-$monthNew"
         }
 

@@ -11,10 +11,12 @@
         android:label="MyBills"
         android:roundIcon="@drawable/ic_female_wallet"
         android:supportsRtl="true"
-        android:screenOrientation="portrait">
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.MyBills">
 
         <activity
             android:name=".ui.splash.SplashActivity"
+            android:hardwareAccelerated="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -25,7 +27,7 @@
 
         <activity
             android:name=".ui.login.LoginActivity"
-            android:windowSoftInputMode="stateVisible" />
+            android:windowSoftInputMode="stateVisible"/>
 
         <activity
             android:name=".ui.main.MainActivity"

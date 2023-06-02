@@ -10,8 +10,7 @@ import com.carrati.domain.models.Conta
 import com.carrati.domain.usecases.contas.CriarContaUC
 import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.ObterBalancoMensalUC
-import com.carrati.mybills.appCompose.extensions.month
-import com.carrati.mybills.appCompose.extensions.year
+import com.carrati.mybills.appCompose.extensions.toYearMonth
 import java.lang.Exception
 import java.util.*
 import kotlinx.coroutines.Dispatchers
@@ -21,20 +20,20 @@ import kotlinx.coroutines.withContext
 class HomeViewModel(
     private val obterBalancoMensalUC: ObterBalancoMensalUC,
     private val listarContasUC: ListarContasUC,
-    private val criarContaUC: CriarContaUC,
-    private val userId: String
+    private val criarContaUC: CriarContaUC
 ) : ViewModel() {
     val state: MutableState<HomeViewState> = mutableStateOf(HomeViewState())
 
-    fun loadData(selectedDate: Calendar = state.value.selectedDate) {
+    fun loadData(userId: String, selectedDate: Calendar = state.value.selectedDate) {
         state.value = state.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             try {
                 val dispatcher = Dispatchers.IO
-                val list = withContext(dispatcher) { listarContasUC.execute(userId) }
+                val list = withContext(dispatcher) {
+                    listarContasUC.execute(userId)
+                }
                 val balancoMensal = withContext(dispatcher) {
-                    val selectedPeriod = "${selectedDate.year}-${selectedDate.month}"
-                    obterBalancoMensalUC.execute(userId, selectedPeriod)
+                    obterBalancoMensalUC.execute(userId, selectedDate.toYearMonth())
                 }
                 state.value = state.value.copy(
                     isLoading = false,
@@ -57,6 +56,7 @@ class HomeViewModel(
     }
 
     fun onAddConta(
+        userId: String,
         accountName: String,
         initialValue: Double,
         onError: () -> Unit
@@ -65,7 +65,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 criarContaUC.execute(userId, Conta(accountName, initialValue))
-                loadData(state.value.selectedDate)
+                loadData(userId, state.value.selectedDate)
             } catch (e: Exception) {
                 Log.e("exception cria conta", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)

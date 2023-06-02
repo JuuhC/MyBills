@@ -11,11 +11,12 @@ import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarReceitaDespesaUC
 import com.carrati.domain.usecases.transacoes.EditarTransacaoUC
-import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
 import com.carrati.mybills.appCompose.extensions.toCalendar
 import com.carrati.mybills.appCompose.extensions.toYearMonth
 import com.carrati.mybills.appCompose.extensions.toYearMonthDay
 import com.carrati.mybills.appCompose.ui.newTransaction.FormTransactionViewState
+import com.carrati.mybills.extensions.toMoneyDouble
+import com.carrati.mybills.extensions.toMoneyString
 import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,28 +25,29 @@ import kotlinx.coroutines.launch
 class FormExpenseIncomeViewModel(
     private val transactionType: TransactionTypeEnum,
     private val oldTransaction: Transacao?,
-    private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
+    private val userId: String,
     private val cadastrarReceitaDespesaUC: CadastrarReceitaDespesaUC,
     private val listarContasUC: ListarContasUC,
     private val editarTransacaoUC: EditarTransacaoUC
 ) : ViewModel() {
 
     val state: MutableState<FormTransactionViewState> = mutableStateOf(FormTransactionViewState())
-    private val userId: String = obterUsuarioFirestoreUC.execute()?.value?.uid!!
 
     init {
-        if (oldTransaction != null)
+        if (oldTransaction != null) {
             state.value = state.value.copy(
-                amount = oldTransaction.valor ?: 0.0,
+                amount = oldTransaction.valor.toMoneyString(),
                 paid = oldTransaction.efetuado ?: false,
                 date = oldTransaction.data.toCalendar(),
                 description = oldTransaction.nome ?: "",
                 account1 = oldTransaction.conta ?: ""
             )
+        }
+
         carregarContas()
     }
 
-    private fun carregarContas() {
+    fun carregarContas() {
         state.value = state.value.copy(loading = true)
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -54,7 +56,6 @@ class FormExpenseIncomeViewModel(
             } catch (e: Exception) {
                 Log.e("exception listar conta", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
-                state.value = state.value.copy(loading = true)
             }
         }
     }
@@ -75,7 +76,7 @@ class FormExpenseIncomeViewModel(
                     this.tipo = transactionType.nome
                     this.data = state.value.date.toYearMonthDay()
                     this.nome = state.value.description
-                    this.valor = state.value.amount
+                    this.valor = state.value.amount.toMoneyDouble()
                     this.conta = state.value.account1
                     this.efetuado = state.value.paid
                 }
@@ -90,6 +91,7 @@ class FormExpenseIncomeViewModel(
     }
 
     private fun editarTransacao(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        Log.e("editarTransacao", "chamando...")
         state.value = state.value.copy(loading = true)
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -98,7 +100,7 @@ class FormExpenseIncomeViewModel(
                     this.tipo = oldTransaction?.tipo
                     this.data = state.value.date.toYearMonthDay()
                     this.nome = state.value.description
-                    this.valor = state.value.amount
+                    this.valor = state.value.amount.toMoneyDouble()
                     this.conta = state.value.account1
                     this.efetuado = state.value.paid
                 }
@@ -110,7 +112,7 @@ class FormExpenseIncomeViewModel(
                 )
                 onSuccess()
             } catch (e: Exception) {
-                Log.e("exception save despesa", e.toString())
+                Log.e("exception edit despesa", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)
                 onError("Erro ao salvar despesa: $e")
             }

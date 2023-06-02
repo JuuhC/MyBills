@@ -2,6 +2,8 @@ package com.carrati.mybills.appCompose.ui.main
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.carrati.domain.models.Usuario
 import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
@@ -18,7 +20,8 @@ class MainViewModel(
     )
     val searchText: MutableState<String> = mutableStateOf("")
 
-    var user: Usuario = obterUsuarioFirestoreUC.execute()?.value!!
+    private var _user: MutableLiveData<Usuario> = obterUsuarioFirestoreUC.execute()
+    var user: LiveData<Usuario> = _user
 
     fun signOutFirebase() {
         signOutFirebaseUC.execute()

@@ -85,12 +85,12 @@ class TransacoesFragment : Fragment() {
     }
 
     private fun configCalendar() {
-        val month = String.format("%02d", calendario.currentDate.month)
-        selectedPeriod = "${calendario.currentDate.year}-$month"
+        // val month = String.format("%02d", calendario.currentDate.month)
+        selectedPeriod = "${calendario.currentDate.year}-${calendario.currentDate.month}"
 
         calendario.setOnMonthChangedListener { _, date ->
-            val monthNew = String.format("%02d", date.month)
-            selectedPeriod = "${date.year}-$monthNew"
+            // val monthNew = String.format("%02d", date.month)
+            selectedPeriod = "${date.year}-${date.month}"
 
             viewModel.getTransacoes(usuario.uid!!, selectedPeriod!!)
             viewModel.transacoesLiveData.observe(viewLifecycleOwner, observerTransacoes)
@@ -160,21 +160,27 @@ class TransacoesFragment : Fragment() {
                 binding.llErro.root.isVisible = false
                 binding.llLoading.isVisible = true
                 binding.rvList.isVisible = false
+                binding.llEmpty.root.isVisible = false
             }
             Response.Status.SUCCESS -> {
                 binding.llLoading.isVisible = false
-                binding.rvList.isVisible = true
+
                 binding.llErro.root.isVisible = false
+
                 viewModel.transacoesLiveData.removeObserver(observerTransacoes)
                 viewModel.transacoesLiveData.value = Response.loading()
 
                 if (response.data is List<*>) {
+                    val list = response.data as List<Transacao>
                     adapter = TransacoesAdapter(
-                        response.data as List<Transacao>,
+                        list,
                         editarDespesaListener,
                         editarReceitaListener
                     )
                     binding.rvList.adapter = adapter
+
+                    binding.llEmpty.root.isVisible = list.isEmpty()
+                    binding.rvList.isVisible = list.isNotEmpty()
                 }
             }
             Response.Status.ERROR -> {
@@ -252,9 +258,11 @@ class TransacoesFragment : Fragment() {
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    if (this@TransacoesFragment::adapter.isInitialized) adapter.filtrarTransacoes(
-                        newText ?: ""
-                    )
+                    if (this@TransacoesFragment::adapter.isInitialized) {
+                        adapter.filtrarTransacoes(
+                            newText ?: ""
+                        )
+                    }
                     return false
                 }
             })

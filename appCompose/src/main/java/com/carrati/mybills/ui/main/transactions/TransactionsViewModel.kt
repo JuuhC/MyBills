@@ -16,12 +16,11 @@ import kotlinx.coroutines.launch
 
 class TransactionsViewModel(
     private val listarTransacoesUC: ListarTransacoesUC,
-    private val deletarTransacaoUC: DeletarTransacaoUC,
-    private val userId: String
+    private val deletarTransacaoUC: DeletarTransacaoUC
 ) : ViewModel() {
     val state: MutableState<TransactionsViewState> = mutableStateOf(TransactionsViewState())
 
-    fun loadData(selectedDate: Calendar = state.value.selectedDate) {
+    fun loadData(userId: String, selectedDate: Calendar = state.value.selectedDate) {
         state.value = state.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             try {
@@ -44,12 +43,16 @@ class TransactionsViewModel(
         }
     }
 
-    fun onDeleteTransaction(transacao: Transacao) {
+    fun onDeleteTransaction(transacao: Transacao, userId: String) {
         state.value = state.value.copy(isLoading = true, isError = false)
         viewModelScope.launch {
             try {
-                deletarTransacaoUC.execute(userId, state.value.selectedDate.toYearMonth(), transacao)
-                loadData(state.value.selectedDate)
+                deletarTransacaoUC.execute(
+                    userId,
+                    state.value.selectedDate.toYearMonth(),
+                    transacao
+                )
+                loadData(userId, state.value.selectedDate)
             } catch (e: Exception) {
                 Log.e("exception deletar transacao", e.toString())
                 FirebaseAPI().sendThrowableToFirebase(e)

@@ -28,7 +28,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,13 +46,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Conta
+import com.carrati.mybills.appCompose.R
 import com.carrati.mybills.appCompose.ui.common.EmptyListLayout
 import com.carrati.mybills.appCompose.ui.common.ErrorMessageLayout
 import com.carrati.mybills.appCompose.ui.main.home.HomeViewModel
 import com.carrati.mybills.appCompose.ui.main.home.HomeViewState
 import java.util.*
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Preview
 @Composable
@@ -62,21 +63,28 @@ fun HomeScreenPreview() {
         Conta("Conta", 20.0),
         Conta("Conta", 30.0)
     )
+    state.isLoading = false
     HomeLayout(state, {}, { _, _ -> })
 }
 
 @Composable
-fun HomeScreen(selectedDate: MutableState<Calendar>, userId: String) {
+fun HomeScreen(selectedDate: Calendar, userId: String) {
     val context = LocalContext.current
-    val viewModel: HomeViewModel = koinViewModel { parametersOf(userId) }
-    viewModel.loadData(selectedDate.value)
+    val viewModel: HomeViewModel = koinViewModel()
+
+    LaunchedEffect(selectedDate, userId) {
+        if (userId.isNotEmpty()) {
+            viewModel.loadData(userId, selectedDate)
+        }
+    }
+
     HomeLayout(
         state = viewModel.state.value,
         onRefreshData = {
-            viewModel.loadData()
+            viewModel.loadData(userId)
         },
         onCreateAccount = { accountName, initialValue ->
-            viewModel.onAddConta(accountName, initialValue) {
+            viewModel.onAddConta(userId, accountName, initialValue) {
                 Toast.makeText(
                     context,
                     "Erro ao salvar conta. Tente novamente mais tarde.",
@@ -103,10 +111,11 @@ private fun HomeLayout(
         when {
             state.isLoading -> {
                 CircularProgressIndicator(
+                    color = colorResource(id = R.color.light_yellow),
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .padding(top = 48.dp)
-                        .size(60.dp)
+                        .size(40.dp)
                 )
             }
             state.isError -> {
@@ -300,7 +309,7 @@ private fun CreateAccountDialog(
     onConfirmButton: (String, Double) -> Unit,
     setVisible: (Boolean) -> Unit
 ) {
-    var accountName by remember { mutableStateOf("teste") }
+    var accountName by remember { mutableStateOf("") }
     var initialValue by remember { mutableStateOf(0.0) }
 
     AlertDialog(

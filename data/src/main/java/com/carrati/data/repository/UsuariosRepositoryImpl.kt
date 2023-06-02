@@ -10,7 +10,7 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.firestore.DocumentSnapshot
 
-class UsuariosRepositoryImpl(api: FirebaseAPI): IUsuariosRepository {
+class UsuariosRepositoryImpl(api: FirebaseAPI) : IUsuariosRepository {
     private val firebaseAuth = api.getFirebaseAuth()
     private val rootRef = api.getFirebaseDb()
     private val usersRef = rootRef.collection("users")
@@ -83,7 +83,7 @@ class UsuariosRepositoryImpl(api: FirebaseAPI): IUsuariosRepository {
         return newUserMutableLiveData
     }
 
-    override fun getUserFromFirestore(): MutableLiveData<Usuario>? {
+    override fun getUserFromFirestore(): MutableLiveData<Usuario> {
         val uid = firebaseAuth.currentUser?.uid
         val userMutableLiveData: MutableLiveData<Usuario> = MutableLiveData<Usuario>()
         usersRef.document(uid!!).get().addOnCompleteListener { userTask: Task<DocumentSnapshot?> ->

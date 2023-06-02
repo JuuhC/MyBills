@@ -36,12 +36,12 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,6 +62,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
 import com.carrati.domain.models.TransactionTypeEnum.INCOME
@@ -93,16 +94,16 @@ private fun MainScreenPreview() {
     val searchText = remember {
         mutableStateOf("")
     }
-    val user = Usuario().apply { name = "Carrati" }
-    MainScreen(selectedDate, searchText, user, {}, {})
+    val user by remember { derivedStateOf { Usuario().apply { name = "Carrati" } } }
+    MainScreen(selectedDate, searchText, user, { _, _ -> }, {})
 }
 
 @Composable
 fun MainScreen(
     selectedDate: MutableState<Calendar>,
     searchText: MutableState<String>,
-    user: Usuario,
-    navigateToForms: (TransactionTypeEnum) -> Unit,
+    user: Usuario?,
+    navigateToForms: (TransactionTypeEnum, Transacao?) -> Unit,
     onSignOut: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -120,7 +121,7 @@ fun MainScreen(
                     Home -> {
                         TopAppBar(
                             title = {
-                                Text(text = "Olá, ${user.name}", color = Color.White)
+                                Text(text = "Olá, ${user?.name ?: ""}", color = Color.White)
                             },
                             backgroundColor = Color(0xFF33B5E5),
                             elevation = 0.dp,
@@ -163,10 +164,11 @@ fun MainScreen(
                     elevation = 2.dp
                 ) {
                     listOf(Home, Transactions).forEach { item ->
-                        val color = if (item == currentScreen)
+                        val color = if (item == currentScreen) {
                             Color(0xFF33B5E5)
-                        else
+                        } else {
                             Color.Black.copy(0.4f)
+                        }
                         BottomNavigationItem(
                             icon = {
                                 Icon(
@@ -191,15 +193,16 @@ fun MainScreen(
                 MonthYearNavigationView(selectedDate = selectedDate)
                 MainNavHost(
                     navController = navController,
-                    selectedDate = selectedDate,
-                    searchText = searchText,
-                    userId = user.uid ?: "",
-                    modifier = Modifier.padding(innerPadding)
+                    selectedDate = selectedDate.value,
+                    searchText = searchText.value,
+                    userId = user?.uid ?: "",
+                    modifier = Modifier.padding(innerPadding),
+                    navigateToForms = navigateToForms
                 )
             }
         }
 
-        MainFABMenu(isFabMenuVisible, navigateToForms)
+        MainFABMenu(isFabMenuVisible) { type -> navigateToForms(type, null) }
     }
 }
 
@@ -231,7 +234,7 @@ fun MonthYearNavigationView(
                 text = formatter.format(selectedDate.value.time),
                 color = Color.White,
                 modifier = Modifier.padding(16.dp),
-                fontSize = 18.sp
+                fontSize = 16.sp
             )
         }
         IconButton(
@@ -250,10 +253,11 @@ fun MonthYearNavigationView(
 @Composable
 fun MainNavHost(
     navController: NavHostController,
-    selectedDate: MutableState<Calendar>,
-    searchText: MutableState<String>,
+    selectedDate: Calendar,
+    searchText: String,
     userId: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigateToForms: (TransactionTypeEnum, Transacao) -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -272,7 +276,8 @@ fun MainNavHost(
                 TransactionsScreen(
                     selectedDate = selectedDate,
                     searchText = searchText,
-                    userId = userId
+                    userId = userId,
+                    navigateToForms = navigateToForms
                 )
             } else {
                 TransactionsScreenPreview()
@@ -285,7 +290,7 @@ fun MainNavHost(
 @Composable
 fun MainFABMenu(
     isFabMenuVisible: MutableState<Boolean>,
-    navigateToForms: (TransactionTypeEnum) -> Unit
+    navigateToForms: (TransactionTypeEnum) -> Unit,
 ) {
     AnimatedVisibility(
         visible = isFabMenuVisible.value,

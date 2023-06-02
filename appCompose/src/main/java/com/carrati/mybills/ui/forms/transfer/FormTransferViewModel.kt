@@ -10,23 +10,22 @@ import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.usecases.contas.ListarContasUC
 import com.carrati.domain.usecases.transacoes.CadastrarTransferenciaUC
-import com.carrati.domain.usecases.usuarios.ObterUsuarioFirestoreUC
 import com.carrati.mybills.appCompose.extensions.toYearMonth
 import com.carrati.mybills.appCompose.extensions.toYearMonthDay
 import com.carrati.mybills.appCompose.ui.newTransaction.FormTransactionViewState
+import com.carrati.mybills.extensions.toMoneyDouble
 import java.lang.Exception
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FormTransferViewModel(
-    private val obterUsuarioFirestoreUC: ObterUsuarioFirestoreUC,
+    private val userId: String,
     private val cadastrarTransferenciaUC: CadastrarTransferenciaUC,
     private val listarContasUC: ListarContasUC
 ) : ViewModel() {
 
     val state: MutableState<FormTransactionViewState> = mutableStateOf(FormTransactionViewState())
-    private val userId: String = obterUsuarioFirestoreUC.execute()?.value?.uid!!
 
     init {
         carregarContas()
@@ -54,7 +53,7 @@ class FormTransferViewModel(
                     this.tipo = TransactionTypeEnum.EXPENSE.nome
                     this.data = state.value.date.toYearMonthDay()
                     this.nome = "Transferência para ${state.value.account2}"
-                    this.valor = state.value.amount
+                    this.valor = state.value.amount.toMoneyDouble()
                     this.conta = state.value.account1
                     this.efetuado = true
                 }
@@ -62,7 +61,7 @@ class FormTransferViewModel(
                     this.tipo = TransactionTypeEnum.INCOME.nome
                     this.data = state.value.date.toYearMonthDay()
                     this.nome = "Transferência de ${state.value.account1}"
-                    this.valor = state.value.amount
+                    this.valor = state.value.amount.toMoneyDouble()
                     this.conta = state.value.account2
                     this.efetuado = true
                 }

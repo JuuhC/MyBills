@@ -103,13 +103,12 @@ class HomeFragment : Fragment(), FirebaseAuth.AuthStateListener {
     }
 
     private fun configCalendario() {
-        val month = String.format("%02d", calendario.currentDate.month)
-        selectedPeriod = "${calendario.currentDate.year}-$month"
+        // val month = String.format("%02d", calendario.currentDate.month)
+        selectedPeriod = "${calendario.currentDate.year}-${calendario.currentDate.month}"
 
         calendario.setOnMonthChangedListener { _, date ->
-
-            val monthNew = String.format("%02d", date.month)
-            selectedPeriod = "${date.year}-$monthNew"
+            // val monthNew = String.format("%02d", date.month)
+            selectedPeriod = "${date.year}-${date.month}"
 
             viewModel.balancoLiveData.observe(viewLifecycleOwner, observerBalanco)
             viewModel.carregarBalanco(usuario.uid!!, selectedPeriod!!)

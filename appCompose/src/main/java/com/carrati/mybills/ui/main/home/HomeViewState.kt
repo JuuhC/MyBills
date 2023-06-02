@@ -4,7 +4,7 @@ import com.carrati.domain.models.Conta
 import java.util.*
 
 data class HomeViewState(
-    var isLoading: Boolean = false,
+    var isLoading: Boolean = true,
     var isError: Boolean = false,
     var contas: List<Conta> = emptyList(),
     var saldo: Double = 0.0,

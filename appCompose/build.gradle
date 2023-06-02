@@ -75,10 +75,12 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling:$compose"
     implementation "androidx.compose.foundation:foundation:$compose"
     implementation "androidx.compose.runtime:runtime:$compose"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$androidx_lifecycle"
     implementation "androidx.navigation:navigation-compose:$navigation"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     implementation "com.google.accompanist:accompanist-flowlayout:0.27.0"
+    implementation "com.google.accompanist:accompanist-themeadapter-material:0.30.1"
 
     // Firebase
     implementation platform("com.google.firebase:firebase-bom:$firebase_bom")

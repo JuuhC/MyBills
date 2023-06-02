@@ -1,10 +1,13 @@
 package com.carrati.mybills.app.ui.transacoes
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.carrati.domain.models.Transacao
+import com.carrati.mybills.app.R
 import com.carrati.mybills.app.databinding.ItemDespesaBinding
 import com.carrati.mybills.app.databinding.ItemReceitaBinding
 import com.carrati.mybills.app.utils.OneAnyParameterClickListener
@@ -29,14 +32,14 @@ class TransacoesAdapter(
                 parent,
                 false
             )
-            DespesaViewHolder(binding)
+            DespesaViewHolder(binding, parent.context)
         } else {
             val binding = ItemReceitaBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-            ReceitaViewHolder(binding)
+            ReceitaViewHolder(binding, parent.context)
         }
     }
 
@@ -88,26 +91,36 @@ class TransacoesAdapter(
     }
 
     inner class DespesaViewHolder(
-        private val binding: ItemDespesaBinding
+        private val binding: ItemDespesaBinding,
+        private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Transacao) {
             binding.itemNome.text = item.nome
             binding.itemData.text = item.data
             binding.itemValor.text = String.format("R$ %.2f", item.valor)
             binding.itemConta.text = item.conta
-            binding.itemEfetuado.isVisible = item.efetuado?.not() ?: false
+            binding.itemEfetuado.backgroundTintList = if (item.efetuado == true) {
+                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
+            } else {
+                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_gray))
+            }
         }
     }
 
     inner class ReceitaViewHolder(
-        private val binding: ItemReceitaBinding
+        private val binding: ItemReceitaBinding,
+        private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Transacao) {
             binding.itemNome.text = item.nome
             binding.itemData.text = item.data
             binding.itemValor.text = String.format("R$ %.2f", item.valor)
             binding.itemConta.text = item.conta
-            binding.itemEfetuado.isVisible = item.efetuado?.not() ?: false
+            binding.itemEfetuado.backgroundTintList = if (item.efetuado == true) {
+                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_yellow))
+            } else {
+                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_gray))
+            }
         }
     }
 }

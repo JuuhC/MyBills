@@ -64,18 +64,24 @@ class DespesaActivity : AppCompatActivity() {
             binding.tvDataLayout.isErrorEnabled = true
             binding.tvDataLayout.error = "Selecione uma data"
             return
-        } else binding.tvDataLayout.isErrorEnabled = false
+        } else {
+            binding.tvDataLayout.isErrorEnabled = false
+        }
 
         if (binding.edtDescr.text.toString() == "") {
             binding.tvDescrLayout.isErrorEnabled = true
             binding.tvDescrLayout.error = "Adicione uma descrição"
             return
-        } else binding.tvDescrLayout.isErrorEnabled = false
+        } else {
+            binding.tvDescrLayout.isErrorEnabled = false
+        }
 
         if (binding.spinnerConta.text.toString().isBlank()) {
             binding.spinnerContaLayout.error = "Campo obrigatório"
             return
-        } else binding.spinnerContaLayout.error = null
+        } else {
+            binding.spinnerContaLayout.error = null
+        }
 
         if (binding.edtValor.text.toString() == "" || binding.edtValor.text.toString() == "0.00") {
             Toast.makeText(this, "Valor não pode ser zero", Toast.LENGTH_LONG).show()
@@ -154,7 +160,10 @@ class DespesaActivity : AppCompatActivity() {
                                 results.count = list.size
                                 return results
                             }
-                            override fun publishResults(constraint: CharSequence?,results: FilterResults?) {
+                            override fun publishResults(
+                                constraint: CharSequence?,
+                                results: FilterResults?
+                            ) {
                                 notifyDataSetChanged()
                             }
                         }
@@ -165,9 +174,11 @@ class DespesaActivity : AppCompatActivity() {
                     }
 
                     binding.spinnerConta.setAdapter(spinnerAdapter)
-                    if (transacao != null) binding.spinnerConta.setSelection(
-                        list.indexOf(transacao!!.conta)
-                    )
+                    if (transacao != null) {
+                        binding.spinnerConta.setSelection(
+                            list.indexOf(transacao!!.conta)
+                        )
+                    }
                 }
             }
             Response.Status.ERROR -> {
@@ -182,9 +193,10 @@ class DespesaActivity : AppCompatActivity() {
     private fun inflateCalendar() {
         val mDateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
             val dayNew = if (day < 10) "0$day" else day.toString()
-            val monthNew = if (month + 1 < 10) "0${month + 1}" else "${month + 1}"
+            // val monthNew = if (month + 1 < 10) "0${month + 1}" else "${month + 1}"
+            val monthNew = month + 1
 
-            binding.edtData.setText("$year-$monthNew-$dayNew")
+            binding.edtData.setText("$year-$monthNew-$day")
             selectedPeriod = "$year-$monthNew"
         }
 

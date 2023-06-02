@@ -8,8 +8,10 @@ var Calendar.year: Int
     set(value) = this.set(Calendar.YEAR, value)
 
 var Calendar.month: Int
-    get() = this.get(Calendar.MONTH)
-    set(value) = this.set(Calendar.MONTH, value)
+    get() = run {
+        this.get(Calendar.MONTH) + 1
+    }
+    set(value) = this.set(Calendar.MONTH, value - 1)
 
 var Calendar.day: Int
     get() = this.get(Calendar.DAY_OF_MONTH)
@@ -55,7 +57,7 @@ fun String?.toCalendar(format: String = "yyyy-MM-dd"): Calendar {
     val dateFormat = SimpleDateFormat(format, Locale.getDefault())
     val calendar = Calendar.getInstance()
 
-    if(this.isNullOrBlank()) return calendar
+    if (this.isNullOrBlank()) return calendar
 
     val date = dateFormat.parse(this)
     if (date != null) {

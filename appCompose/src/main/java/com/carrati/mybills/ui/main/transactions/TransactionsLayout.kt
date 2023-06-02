@@ -33,7 +33,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -50,13 +51,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.TransactionTypeEnum
+import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
+import com.carrati.domain.models.TransactionTypeEnum.INCOME
 import com.carrati.mybills.appCompose.R
-import com.carrati.mybills.appCompose.ui.common.EmptyListLayout
+import com.carrati.mybills.appCompose.ui.common.EmptyListCardLayout
 import com.carrati.mybills.appCompose.ui.common.ErrorMessageLayout
 import com.carrati.mybills.appCompose.ui.forms.expenseIncome.FormExpenseIncomeActivity
+import com.carrati.mybills.extensions.toMoneyString
 import java.util.*
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Preview
 @Composable
@@ -75,25 +78,42 @@ fun TransactionsScreenPreview() {
         },
         Transacao()
     )
+    state.isLoading = false
     state.transactionsFiltered = state.transactionsAll
-    TransactionsLayout(state = state, onDeleteTransaction = {}, onRefreshData = {})
+    TransactionsLayout(
+        state = state,
+        onDeleteTransaction = {},
+        onRefreshData = {},
+        onItemClick = { _, _ -> }
+    )
 }
 
 @Composable
 fun TransactionsScreen(
-    selectedDate: MutableState<Calendar>,
+    selectedDate: Calendar,
     userId: String,
-    searchText: MutableState<String>
+    searchText: String,
+    navigateToForms: (TransactionTypeEnum, Transacao) -> Unit
 ) {
-    val viewModel: TransactionsViewModel = koinViewModel { parametersOf(userId) }
-    viewModel.loadData(selectedDate.value)
-    viewModel.filterList(searchText.value)
+    val viewModel: TransactionsViewModel = koinViewModel()
+
+    LaunchedEffect(selectedDate, userId) {
+        if (userId.isNotBlank()) {
+            viewModel.loadData(userId, selectedDate)
+        }
+    }
+
+    LaunchedEffect(searchText) {
+        viewModel.filterList(searchText)
+    }
+
     TransactionsLayout(
         state = viewModel.state.value,
         onDeleteTransaction = { trasaction ->
-            viewModel.onDeleteTransaction(transacao = trasaction)
+            viewModel.onDeleteTransaction(trasaction, userId)
         },
-        onRefreshData = { viewModel.loadData() }
+        onRefreshData = { viewModel.loadData(userId = userId) },
+        onItemClick = navigateToForms
     )
 }
 
@@ -101,7 +121,8 @@ fun TransactionsScreen(
 private fun TransactionsLayout(
     state: TransactionsViewState,
     onDeleteTransaction: (Transacao) -> Unit,
-    onRefreshData: () -> Unit
+    onRefreshData: () -> Unit,
+    onItemClick: (TransactionTypeEnum, Transacao) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -122,7 +143,7 @@ private fun TransactionsLayout(
                 ErrorMessageLayout(onRefreshData)
             }
             state.transactionsAll.isEmpty() -> {
-                EmptyListLayout("Ops! Você não possui dados registrados este mês.")
+                EmptyListCardLayout("Ops! Você não possui dados registrados este mês.")
             }
             else -> {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -132,7 +153,8 @@ private fun TransactionsLayout(
                     items(state.transactionsFiltered) { transaction ->
                         SwipeToDismissItem(
                             transaction = transaction,
-                            onDeleteItem = onDeleteTransaction
+                            onDeleteItem = onDeleteTransaction,
+                            onItemClick = onItemClick
                         )
                     }
                     item {
@@ -146,21 +168,21 @@ private fun TransactionsLayout(
 
 @Composable
 private fun TransactionItem(
-    transaction: Transacao
+    transaction: Transacao,
+    onClick: (TransactionTypeEnum, Transacao) -> Unit
 ) {
-    val context = LocalContext.current
-    val isExpense = transaction.tipo?.contains(TransactionTypeEnum.EXPENSE.nome, ignoreCase = true)
+    val typeEnum = TransactionTypeEnum.getByNome(transaction.tipo ?: "")
 
-    val darkColor = if (isExpense == true) {
-        Color(0xFFED4588)
+    val topColor = if (typeEnum == EXPENSE) {
+        colorResource(id = R.color.colorPink)
     } else {
-        Color(0xFF118336)
+        colorResource(id = R.color.light_green)
     }
 
-    val lightColor = if (isExpense == true) {
-        Color(0xFFF866A1)
+    val icon = if (typeEnum == EXPENSE) {
+        painterResource(id = R.drawable.ic_despesa_24dp)
     } else {
-        Color(0xFF2AA653)
+        painterResource(id = R.drawable.ic_receita_24dp)
     }
 
     Card(
@@ -168,20 +190,9 @@ private fun TransactionItem(
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 8.dp)
             .clickable {
-                if (transaction.tipo == TransactionTypeEnum.TRANSFER.nome) {
-                    Toast.makeText(
-                        context,
-                        "Transferências não podem ser editadas, somente excluídas",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return@clickable
+                if (typeEnum != null) {
+                    onClick(typeEnum, transaction)
                 }
-                context.startActivity(
-                    Intent(context, FormExpenseIncomeActivity::class.java).apply {
-                        this.putExtra(FormExpenseIncomeActivity.EXTRA_TYPE, transaction.tipo)
-                        this.putExtra(FormExpenseIncomeActivity.EXTRA_TRANSACTION, transaction)
-                    }
-                )
             },
         shape = RoundedCornerShape(20.dp),
         backgroundColor = Color.White,
@@ -194,8 +205,8 @@ private fun TransactionItem(
         ) {
             Icon(
                 modifier = Modifier.padding(16.dp),
-                painter = painterResource(id = R.drawable.ic_despesa_24dp),
-                tint = darkColor,
+                painter = icon,
+                tint = topColor,
                 contentDescription = null
             )
             Column(
@@ -203,12 +214,12 @@ private fun TransactionItem(
             ) {
                 Text(
                     text = transaction.nome ?: "Nome",
-                    color = darkColor,
+                    color = topColor,
                     fontSize = 15.sp
                 )
                 Text(
                     text = transaction.conta ?: "Conta",
-                    color = lightColor
+                    color = Color.Gray
                 )
             }
             Column(
@@ -216,14 +227,14 @@ private fun TransactionItem(
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.End),
-                    text = transaction.valor?.toString() ?: "R$ 0,00",
-                    color = darkColor,
+                    text = "R$ " + transaction.valor.toMoneyString(),
+                    color = topColor,
                     fontSize = 15.sp
                 )
                 Text(
                     modifier = Modifier.align(Alignment.End),
-                    text = transaction.data ?: "0000/00/00",
-                    color = lightColor
+                    text = transaction.data ?: "0000-00-00",
+                    color = Color.Gray
                 )
             }
             Icon(
@@ -240,7 +251,8 @@ private fun TransactionItem(
 @Composable
 private fun SwipeToDismissItem(
     transaction: Transacao,
-    onDeleteItem: (Transacao) -> Unit
+    onDeleteItem: (Transacao) -> Unit,
+    onItemClick: (TransactionTypeEnum, Transacao) -> Unit
 ) {
     val dismissState = rememberDismissState()
     if (dismissState.isDismissed(EndToStart)) onDeleteItem(transaction)
@@ -259,7 +271,11 @@ private fun SwipeToDismissItem(
             )
             val color = if (!LocalInspectionMode.current) {
                 animateColorAsState(
-                    if (dismissState.targetValue == DismissValue.Default) Color.Gray else Color.Red
+                    if (dismissState.targetValue == DismissValue.Default) {
+                        Color.Gray
+                    } else {
+                        Color.Red.copy(alpha = 0.7f)
+                    }
                 ).value
             } else {
                 Color.Gray
@@ -281,7 +297,7 @@ private fun SwipeToDismissItem(
             }
         },
         dismissContent = {
-            TransactionItem(transaction = transaction)
+            TransactionItem(transaction = transaction, onClick = onItemClick)
         }
     )
 }

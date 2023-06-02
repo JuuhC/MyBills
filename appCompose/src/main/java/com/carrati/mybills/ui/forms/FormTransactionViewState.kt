@@ -4,7 +4,7 @@ import java.util.*
 
 data class FormTransactionViewState(
     var loading: Boolean = false,
-    var amount: Double = 0.0,
+    var amount: String = "",
     var paid: Boolean = false,
     var date: Calendar = Calendar.getInstance(),
     var description: String = "",

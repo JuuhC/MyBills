@@ -1,6 +1,10 @@
 package com.carrati.mybills.appCompose.ui.newTransaction
 
+import android.app.DatePickerDialog
+import android.widget.DatePicker
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
@@ -18,8 +23,10 @@ import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -38,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -49,8 +58,12 @@ import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
 import com.carrati.domain.models.TransactionTypeEnum.INCOME
 import com.carrati.domain.models.TransactionTypeEnum.TRANSFER
+import com.carrati.mybills.appCompose.R
+import com.carrati.mybills.appCompose.extensions.day
+import com.carrati.mybills.appCompose.extensions.month
 import com.carrati.mybills.appCompose.extensions.toCalendar
 import com.carrati.mybills.appCompose.extensions.toYearMonthDay
+import com.carrati.mybills.appCompose.extensions.year
 import java.util.*
 
 @Preview
@@ -81,13 +94,6 @@ fun FormTransactionScreen(
     onSaveTransaction: () -> Unit
 ) {
     Scaffold(
-        /*topBar = {
-            TopAppBar(
-                title = { Text(text = "Despesa", color = Color.Black.copy(alpha = 0.5f)) },
-                backgroundColor = Color(0xFFF866A1),
-                elevation = 0.dp
-            )
-        },*/
         floatingActionButton = {
             if (viewState.value.loading) {
                 CircularProgressIndicator(
@@ -111,7 +117,9 @@ fun FormTransactionScreen(
         floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            val modifier = Modifier.fillMaxWidth().padding(start = 32.dp, end = 32.dp, top = 8.dp)
+            val modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 32.dp, end = 32.dp, top = 8.dp)
             HeaderValue(type, viewState)
             if (type != TRANSFER) FieldPaid(modifier, viewState)
             FieldDate(modifier, viewState)
@@ -150,17 +158,18 @@ fun HeaderValue(
         )
 
         TextField(
-            modifier = Modifier
-                .wrapContentWidth(align = Alignment.End),
-            value = "R$%.2f".format(viewState.value.amount),
+            modifier = Modifier.wrapContentWidth(align = Alignment.End),
+            value = viewState.value.amount,
             onValueChange = {
-                viewState.value.amount = it.toDoubleOrNull() ?: 0.0
+                viewState.value = viewState.value.copy(amount = it)
             },
+            placeholder = { Text("0,00", fontSize = 30.sp, fontWeight = FontWeight.Bold) },
             textStyle = TextStyle(
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
             ),
             colors = TextFieldDefaults.textFieldColors(
+                cursorColor = colorResource(id = R.color.light_yellow),
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 textColor = Color.Black.copy(alpha = 0.6f),
@@ -183,7 +192,7 @@ fun FieldPaid(
     TextField(
         value = "",
         onValueChange = { },
-        modifier = modifier.padding(top = 16.dp),
+        modifier = modifier.padding(top = 16.dp).focusable(false),
         label = { Text(text = "Pago") },
         leadingIcon = {
             Icon(
@@ -195,15 +204,21 @@ fun FieldPaid(
         trailingIcon = {
             Switch(
                 checked = viewState.value.paid,
-                onCheckedChange = { viewState.value.paid = !viewState.value.paid },
-                modifier = Modifier.padding(end = 8.dp)
+                onCheckedChange = {
+                    viewState.value = viewState.value.copy(paid = it)
+                },
+                modifier = Modifier.padding(end = 8.dp),
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = colorResource(id = R.color.light_yellow),
+                    checkedTrackColor = colorResource(id = R.color.light_yellow).copy(alpha = 0.6f)
+                )
             )
         },
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = Color.Transparent,
-            textColor = Color.Black.copy(alpha = 0.6f)
+            disabledLabelColor = Color.Black.copy(alpha = 0.6f)
         ),
-        readOnly = true,
+        enabled = false,
         singleLine = true
     )
 }
@@ -213,10 +228,27 @@ fun FieldDate(
     modifier: Modifier,
     viewState: MutableState<FormTransactionViewState>
 ) {
+    val datePicker = DatePickerDialog(
+        LocalContext.current,
+        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+            val newDate = Calendar.getInstance().apply {
+                day = selectedDayOfMonth
+                month = selectedMonth
+                year = selectedYear
+            }
+            viewState.value = viewState.value.copy(date = newDate)
+        },
+        viewState.value.date.year,
+        viewState.value.date.month,
+        viewState.value.date.day
+    )
+
     TextField(
+        modifier = modifier.clickable {
+            datePicker.show()
+        },
         value = viewState.value.date.toYearMonthDay(),
         onValueChange = { viewState.value.date = it.toCalendar() },
-        modifier = modifier,
         label = { Text(text = "Data") },
         leadingIcon = {
             Icon(
@@ -227,9 +259,11 @@ fun FieldDate(
         },
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = Color.Transparent,
-            textColor = Color.Black.copy(alpha = 0.6f)
+            textColor = Color.Black.copy(alpha = 0.6f),
+            disabledTextColor = Color.Black.copy(alpha = 0.6f),
+            disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium)
         ),
-        readOnly = true,
+        enabled = false,
         singleLine = true
     )
 }
@@ -242,7 +276,9 @@ fun FieldDescription(
 ) {
     TextField(
         value = viewState.value.description,
-        onValueChange = { viewState.value.description = it },
+        onValueChange = {
+            viewState.value = viewState.value.copy(description = it)
+        },
         modifier = modifier,
         label = { Text(text = "Descrição") },
         leadingIcon = {
@@ -285,13 +321,7 @@ fun FieldAccount(
             modifier = Modifier.fillMaxWidth(),
             readOnly = true,
             value = if (isAccount1) viewState.value.account1 else viewState.value.account2,
-            onValueChange = {
-                if (isAccount1) {
-                    viewState.value.account1 = it
-                } else {
-                    viewState.value.account2 = it
-                }
-            },
+            onValueChange = {},
             label = { Text("Conta") },
             leadingIcon = {
                 Icon(
@@ -321,9 +351,9 @@ fun FieldAccount(
                 DropdownMenuItem(
                     onClick = {
                         if (isAccount1) {
-                            viewState.value.account1 = selectionOption
+                            viewState.value = viewState.value.copy(account1 = selectionOption)
                         } else {
-                            viewState.value.account2 = selectionOption
+                            viewState.value = viewState.value.copy(account2 = selectionOption)
                         }
                         expanded = false
                     }
