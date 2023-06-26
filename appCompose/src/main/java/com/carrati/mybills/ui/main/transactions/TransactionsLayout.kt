@@ -1,7 +1,5 @@
 package com.carrati.mybills.appCompose.ui.main.transactions
 
-import android.content.Intent
-import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -41,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -52,11 +49,9 @@ import androidx.compose.ui.unit.sp
 import com.carrati.domain.models.Transacao
 import com.carrati.domain.models.TransactionTypeEnum
 import com.carrati.domain.models.TransactionTypeEnum.EXPENSE
-import com.carrati.domain.models.TransactionTypeEnum.INCOME
 import com.carrati.mybills.appCompose.R
 import com.carrati.mybills.appCompose.ui.common.EmptyListCardLayout
 import com.carrati.mybills.appCompose.ui.common.ErrorMessageLayout
-import com.carrati.mybills.appCompose.ui.forms.expenseIncome.FormExpenseIncomeActivity
 import com.carrati.mybills.extensions.toMoneyString
 import java.util.*
 import org.koin.androidx.compose.koinViewModel
@@ -68,12 +63,12 @@ fun TransactionsScreenPreview() {
     state.transactionsAll = listOf(
         Transacao(),
         Transacao().apply {
-            tipo = "Despesa"
+            tipo = "despesa"
             efetuado = true
         },
         Transacao(),
         Transacao().apply {
-            tipo = "Despesa"
+            tipo = "despesa"
             efetuado = true
         },
         Transacao()

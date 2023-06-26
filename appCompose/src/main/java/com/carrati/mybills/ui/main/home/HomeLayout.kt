@@ -310,13 +310,13 @@ private fun CreateAccountDialog(
     setVisible: (Boolean) -> Unit
 ) {
     var accountName by remember { mutableStateOf("") }
-    var initialValue by remember { mutableStateOf(0.0) }
+    var initialValue by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = { setVisible(false) },
         confirmButton = {
             TextButton(onClick = {
-                onConfirmButton(accountName, initialValue)
+                onConfirmButton(accountName, initialValue.toDoubleOrNull() ?: 0.0)
                 setVisible(false)
             }) {
                 Text("OK", color = Color(0xFF33B5E5))
@@ -348,9 +348,11 @@ private fun CreateAccountDialog(
                 )
                 OutlinedTextField(
                     modifier = Modifier.padding(top = 8.dp),
-                    value = "R$%.2f".format(initialValue),
+                    value = initialValue,
+                    leadingIcon = { Text(text = "R$") },
                     label = { Text(text = "Saldo inicial") },
-                    onValueChange = { initialValue = it.toDoubleOrNull() ?: 0.0 },
+                    placeholder = { Text("0,00") },
+                    onValueChange = { initialValue = it },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done

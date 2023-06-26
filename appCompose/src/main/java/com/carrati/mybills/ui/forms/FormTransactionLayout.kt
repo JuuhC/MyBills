@@ -233,13 +233,13 @@ fun FieldDate(
         { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
             val newDate = Calendar.getInstance().apply {
                 day = selectedDayOfMonth
-                month = selectedMonth
+                month = selectedMonth + 1
                 year = selectedYear
             }
             viewState.value = viewState.value.copy(date = newDate)
         },
         viewState.value.date.year,
-        viewState.value.date.month,
+        viewState.value.date.month - 1,
         viewState.value.date.day
     )
 
